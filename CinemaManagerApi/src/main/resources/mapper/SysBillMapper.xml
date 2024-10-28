@@ -2,14 +2,14 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rabbiter.cm.mapper.SysBillMapper">
+<mapper namespace="com.influence.cm.mapper.SysBillMapper">
 
     <resultMap id="BillMap" type="SysBill">
         <id property="billId" column="bill_id"></id>
         <result property="userId" column="user_id"></result>
         <result property="sessionId" column="session_id"></result>
-        <association property="sysSession" column="session_id" select="com.rabbiter.cm.mapper.SysSessionMapper.findSessionById"></association>
-        <association property="sysUser" column="user_id" select="com.rabbiter.cm.mapper.SysUserMapper.findUserById"></association>
+        <association property="sysSession" column="session_id" select="com.influence.cm.mapper.SysSessionMapper.findSessionById"></association>
+        <association property="sysUser" column="user_id" select="com.influence.cm.mapper.SysUserMapper.findUserById"></association>
     </resultMap>
 
     <select id="findAllBills" parameterType="SysBill" resultMap="BillMap">

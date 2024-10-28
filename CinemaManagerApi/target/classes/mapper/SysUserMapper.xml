@@ -2,12 +2,12 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rabbiter.cm.mapper.SysUserMapper">
+<mapper namespace="com.influence.cm.mapper.SysUserMapper">
 
     <resultMap id="SysUserMap" type="SysUser">
         <id property="userId" column="user_id"></id>
         <result property="roleId" column="role_id"></result>
-        <association property="sysRole" column="role_id" select="com.rabbiter.cm.mapper.SysRoleMapper.findRoleById"></association>
+        <association property="sysRole" column="role_id" select="com.influence.cm.mapper.SysRoleMapper.findRoleById"></association>
     </resultMap>
 
     <resultMap id="loginUserMap" type="LoginUser">
@@ -22,8 +22,8 @@
         <result property="sysUser.birthday" column="birthday"></result>
         <result property="sysUser.autograph" column="autograph"></result>
         <result property="sysUser.roleId" column="role_id"></result>
-        <association property="sysUser.sysRole" column="role_id" select="com.rabbiter.cm.mapper.SysRoleMapper.findRoleById"></association>
-        <association property="sysUser.sysRole.children" column="role_id" select="com.rabbiter.cm.mapper.SysRoleMapper.findByRoleId"></association>
+        <association property="sysUser.sysRole" column="role_id" select="com.influence.cm.mapper.SysRoleMapper.findRoleById"></association>
+        <association property="sysUser.sysRole.children" column="role_id" select="com.influence.cm.mapper.SysRoleMapper.findByRoleId"></association>
     </resultMap>
 
     <select id="findAllUsers" resultMap="SysUserMap" parameterType="SysUser">

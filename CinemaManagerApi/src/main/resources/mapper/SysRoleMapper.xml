@@ -2,13 +2,13 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rabbiter.cm.mapper.SysRoleMapper">
+<mapper namespace="com.influence.cm.mapper.SysRoleMapper">
 
     <resultMap id="SysRoleMap" type="SysRole">
         <id property="roleId" column="role_id"></id>
         <result property="roleName" column="role_name"></result>
         <result property="roleDesc" column="role_desc"></result>
-        <collection property="children" column="role_id" ofType="SysResource" select="com.rabbiter.cm.mapper.SysRoleMapper.findByRoleId">
+        <collection property="children" column="role_id" ofType="SysResource" select="com.influence.cm.mapper.SysRoleMapper.findByRoleId">
         </collection>
     </resultMap>
 

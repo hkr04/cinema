@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rabbiter.cm.mapper.SysSessionMapper">
+<mapper namespace="com.influence.cm.mapper.SysSessionMapper">
 
     <resultMap id="SysSessionResult" type="SysSession">
         <id property="sessionId" column="session_id"></id>
@@ -16,8 +16,8 @@
         <result property="sessionSeats" column="session_seats"></result>
         <result property="sessionTips" column="session_tips"></result>
         <result property="seatNums" column="seat_nums"></result>
-        <association property="sysHall" column="hallId=hall_id" select="com.rabbiter.cm.mapper.SysHallMapper.findHallById"></association>
-        <association property="sysMovie" column="movie_id" select="com.rabbiter.cm.mapper.SysMovieMapper.findMovieById"></association>
+        <association property="sysHall" column="hallId=hall_id" select="com.influence.cm.mapper.SysHallMapper.findHallById"></association>
+        <association property="sysMovie" column="movie_id" select="com.influence.cm.mapper.SysMovieMapper.findMovieById"></association>
     </resultMap>
 
     <resultMap id="SysSessionMap" type="SysSession">

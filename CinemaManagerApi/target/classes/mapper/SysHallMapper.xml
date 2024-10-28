@@ -2,12 +2,12 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rabbiter.cm.mapper.SysHallMapper">
+<mapper namespace="com.influence.cm.mapper.SysHallMapper">
 
     <resultMap id="sysHallMap" type="SysHall">
         <result property="hallId" column="hall_id"></result>
         <result property="cinemaId" column="cinema_id"></result>
-        <association property="sysCinema" column="cinema_id" select="com.rabbiter.cm.mapper.SysCinemaMapper.findCinema"></association>
+        <association property="sysCinema" column="cinema_id" select="com.influence.cm.mapper.SysCinemaMapper.findCinema"></association>
     </resultMap>
 
     <select id="findAllHalls" resultMap="sysHallMap" parameterType="SysHall">

@@ -2,11 +2,11 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rabbiter.cm.mapper.SysMovieMapper">
+<mapper namespace="com.influence.cm.mapper.SysMovieMapper">
 
     <resultMap id="SysMovieResult" type="SysMovie">
         <id property="movieId" column="movie_id"></id>
-        <collection property="movieCategoryList" column="movie_id" select="com.rabbiter.cm.mapper.SysMovieCategoryMapper.findOneMovieCategorys"></collection>
+        <collection property="movieCategoryList" column="movie_id" select="com.influence.cm.mapper.SysMovieCategoryMapper.findOneMovieCategorys"></collection>
     </resultMap>
 
     <select id="findAllMovies" resultMap="SysMovieResult" parameterType="SysMovieVo">

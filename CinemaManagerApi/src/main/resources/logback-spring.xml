@@ -6,7 +6,7 @@
     <conversionRule conversionWord="wEx"
                     converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
     <!--日志存放路径 勿在 LogBack 的配置中使用相对路径-->
-<!--    <property name="log.path" value="C:/__study/web/Film/rabbiter/logs" />-->
+<!--    <property name="log.path" value="C:/__study/web/Film/influence/logs" />-->
     <!-- 日志输出格式 -->
     <property name="log.pattern" value="%d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
 
@@ -85,7 +85,7 @@
     </appender>
 
     <!-- 系统模块日志级别控制  -->
-    <logger name="com.rabbiter" level="info" />
+    <logger name="com.influence" level="info" />
     <!-- Spring日志级别控制  -->
     <logger name="org.springframework" level="warn" />
 

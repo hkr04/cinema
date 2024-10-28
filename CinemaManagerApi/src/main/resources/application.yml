@@ -7,7 +7,7 @@ spring:
     druid:
       url: jdbc:mysql://localhost:3306/cinema_manager?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=Asia/Shanghai
       username: root
-      password: root
+      password: rootroot
       initialSize: 0
       minIdle: 10
       maxActive: 20
@@ -43,14 +43,14 @@ spring:
       max-request-size: 1024MB
 
 mybatis:
-  type-aliases-package: com.rabbiter.cm.**.domain
+  type-aliases-package: com.influence.cm.**.domain
   mapper-locations: classpath*:mapper/**/*Mapper.xml
   configuration:
     map-underscore-to-camel-case: true
 
 logging:
   level:
-    com.rabbiter: trace
+    com.influence: trace
     org.springframework: warn
 
 pagehelper:

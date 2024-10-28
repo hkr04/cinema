@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.rabbiter.cm.mapper.SysCinemaMapper">
+<mapper namespace="com.influence.cm.mapper.SysCinemaMapper">
 
     <!-- 查询影院信息，包含影院上映的所有电影信息 -->
     <resultMap id="SysCinemaMap" type="SysCinema">
@@ -14,7 +14,7 @@
         <result property="cinemaPhone" column="cinema_phone"></result>
         <result property="workStartTime" column="work_start_time"></result>
         <result property="workEndTime" column="work_end_time"></result>
-        <collection property="sysMovieList" ofType="SysMovie" column="cinema_id" select="com.rabbiter.cm.mapper.SysMovieMapper.findMovieByCinemaId"></collection>
+        <collection property="sysMovieList" ofType="SysMovie" column="cinema_id" select="com.influence.cm.mapper.SysMovieMapper.findMovieByCinemaId"></collection>
     </resultMap>
 
     <select id="findCinema" parameterType="Long" resultType="SysCinema">

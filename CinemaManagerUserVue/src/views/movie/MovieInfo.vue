@@ -16,8 +16,18 @@
               <li>{{movieInfo.releaseDate}} {{movieInfo.movieArea}} 上映</li>
             </ul>
           </div>
+          <!-- 电影评分 -->
+            <div class="movie-rating">
+            <!-- <span class="movie-rating-title">评分：</span> -->
+            <el-rate v-model="movieInfo.movieRating" :max="5" allow-half
+            void-color="white"
+            disabled-void-color="#d3d3d3"
+            class="custom-rate">
+            </el-rate>
+            </div>
           <div class="movie-info-btn">
-            <el-button class="buy-btn" type="primary" @click="toChooseSession" style="font-size: 22px;"><i class="iconfont icon-r-yes" style="font-size: 26px;"></i> 特惠购票</el-button>
+            <el-button class="buy-btn" type="primary" @click="toChooseSession" style="font-size: 22px;">
+              <i class="iconfont icon-r-yes" style="font-size: 26px;"></i> 特惠购票</el-button>
           </div>
           <div class="movie-info-score">
             <div class="movie-index box-office-container">
@@ -111,16 +121,20 @@
 
 <script>
 import movieItem from './../../components/movie/movie-item';
+import { Rate } from 'element-ui';
 import moment from 'moment'
+
 export default {
   name: "MovieInfo",
   components:{
-    movieItem
+    movieItem,
+    'el-rate': Rate
   },
   data() {
     return {
       movieInfo: {
-        moviePictures: []
+        moviePictures: [],
+        movieRating: 4.5 // 示例评分
       },
       movieId: this.$route.params.movieId,
       activeName: 'introduction',
@@ -261,6 +275,17 @@ ul li{
   position: absolute;
   bottom: 20px;
 }
+
+.movie-rating {
+  position: absolute;
+  bottom: 100px;
+}
+.custom-rate .el-rate__item {
+  font-size: 100px; /* 调整星星大小 ？？？*/
+}
+/* .movie-rating-title {
+  margin-right: 10px;
+} */
 
 .buy-btn{
   margin-top: 10px;

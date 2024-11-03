@@ -102,39 +102,6 @@
                 </div>
               </div>
             </el-tab-pane>
-            <!-- 添加评论标签页 -->
-              <el-tab-pane label="评论" name="comments">
-                <div class="tab-body">
-                  <!-- 评论输入框 -->
-                  <div class="comment-box">
-                    <el-input
-                      v-model="newComment"
-                      type="textarea"
-                      :rows="3"
-                      placeholder="写下你的评论..."
-                    />
-                    <el-button 
-                      type="primary" 
-                      @click="addComment" 
-                      style="margin-top: 10px;"
-                    >
-                      发表评论
-                    </el-button>
-                  </div>
-
-                  <!-- 评论列表 -->
-                  <div class="comment-list">
-                    <el-card v-for="comment in comments" :key="comment.id" class="comment-item">
-                      <div class="comment-info">
-                        <span class="comment-user">{{ comment.username }}</span>
-                        <span class="comment-time">{{ comment.time }}</span>
-                      </div>
-                      <div class="comment-content">{{ comment.content }}</div>
-                    </el-card>
-                  </div>
-                </div>
-              </el-tab-pane>
-
           </el-tabs>
         </div>
       </div>
@@ -158,23 +125,7 @@ export default {
       movieId: this.$route.params.movieId,
       activeName: 'introduction',
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
-      httpURL: this.global.base,
-      // 添加评论相关数据
-      newComment: '',
-      comments: [
-        {
-          id: 1,
-          username: '用户1',
-          content: '这部电影很好看！',
-          time: '2024-01-15 12:00'
-        },
-        {
-          id: 2,
-          username: '用户2',
-          content: '演员演技很棒。',
-          time: '2024-01-15 13:30'
-        }
-      ]
+      httpURL: this.global.base
     }
   },
   created() {
@@ -201,27 +152,9 @@ export default {
     toChooseSession(){
       let cinemaId = 1
       this.$router.push('/chooseSession/' + cinemaId)
-    },
-    // 添加评论方
-    addComment() {
-      if (!this.newComment.trim()) {
-        this.$message.warning('请输入评论内容')
-        return
-      }
-
-      const comment = {
-        id: this.comments.length + 1,
-        username: '当前用户',
-        content: this.newComment,
-        time: new Date().toLocaleString()
-      }
-
-      this.comments.unshift(comment)
-      this.newComment = ''
-      this.$message.success('评论成功')
     }
   }
-};
+}
 </script>
 
 <style scoped>

@@ -27,3 +27,9 @@ set NODE_OPTIONS=--openssl-legacy-provider
 - 在`CinemaManagerApi/src/main/resources/application.yml`中修改数据库的用户名与密码
 - 确保数据库已连接，运行`CinemaManagerApi/src/main/java/com/influence/cm/CinemaManagerApplication.java`
 - 此时终端若无报错，前端页面应正常显示电影封面等数据
+
+
+chatbot：
+- `npm install openai markdown-it axios`
+- 添加`CinemaManagerUserVue/src/components/AiChatBox.vue`
+- 修改 `CinemaManagerUserVue/src/views/home/Home.vue`

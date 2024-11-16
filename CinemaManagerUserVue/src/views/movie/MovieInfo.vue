@@ -197,6 +197,13 @@ export default {
     showPictures(){
       this.activeName = 'pictures'
     },
+    // 加入一个提取评论的方法
+    async getComments(){
+      const {data: res} = await axios.get('sysComment/find/' + this.movieId)
+      if(res.code !== 200) return this.$message.error('数据查询失败')
+      this.comments = res.data
+      console.log(this.comments)
+    },
     //转到购票页面
     toChooseSession(){
       let cinemaId = 1

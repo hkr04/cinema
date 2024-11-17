@@ -28,6 +28,8 @@ public class SysCommentServiceImpl implements SysCommentService {
 
     @Override
     public int addComment(SysComment sysComment) {
+        sysComment.setCreatedAt(new Date());
+        sysComment.setUpdatedAt(new Date());
         return sysCommentMapper.addComment(sysComment);
     }
 

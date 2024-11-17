@@ -27,7 +27,7 @@ public class SysComment implements Serializable {
     private Long contentId;
 
     // The date and time when the comment was created
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Shanghai")
     private Date createdAt;
 
     // Optional field: The ID of the parent comment (if it's a reply)
@@ -40,7 +40,7 @@ public class SysComment implements Serializable {
     private String status;
 
     // Add this field
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Shanghai")
     private Date updatedAt;
 
     public SysComment() {

@@ -422,15 +422,16 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_comment`;
 CREATE TABLE `sys_comment` (
-  `comment_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '评论ID',
-  `content_id` bigint(20) UNSIGNED NOT NULL COMMENT '关联的内容ID，可能是电影或影厅等',
-  `user_id` bigint(20) UNSIGNED NOT NULL COMMENT '用户编号，关联用户表',
-  `content` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '评论内容',
-  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '评论状态，0为删除，1为有效',
-  `created_at` datetime NULL DEFAULT NULL COMMENT '评论创建时间',
-  `updated_at` datetime NULL DEFAULT NULL COMMENT '评论更新时间',
+  `comment_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '评论ID',
+  `content_id` BIGINT(20) UNSIGNED NOT NULL COMMENT '关联的内容ID，可能是电影或影厅等',
+  `user_id` BIGINT(20) UNSIGNED NOT NULL COMMENT '用户ID',
+  `author` VARCHAR(100) DEFAULT NULL COMMENT '评论作者',
+  `content` TEXT NOT NULL COMMENT '评论内容',
+  `status` TINYINT(4) NOT NULL DEFAULT 1 COMMENT '评论状态，0为删除，1为有效',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '评论创建时间',
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '评论更新时间',
   PRIMARY KEY (`comment_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+); ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_comment

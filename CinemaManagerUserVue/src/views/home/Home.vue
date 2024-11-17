@@ -4,10 +4,10 @@
       <div class="left">
         <div class="panel">
           <div class="panel-header">
-            
-            
-            <div style="color: #ef4238;font-size: 28px;"> 
-              <i class="iconfont icon-r-team" style="font-size: 42px;"> </i> 
+
+
+            <div style="color: #ef4238;font-size: 28px;">
+              <i class="iconfont icon-r-team" style="font-size: 42px;"> </i>
               <b> 热映中</b>
             </div>
             <a href="/movie/movieOngoing">全部</a>
@@ -18,8 +18,8 @@
         </div>
         <div class="panel">
           <div class="panel-header">
-            <div style="color: #2d98f3;font-size: 28px;"> 
-              <i class="iconfont icon-r-refresh" style="font-size: 42px;"> </i> 
+            <div style="color: #2d98f3;font-size: 28px;">
+              <i class="iconfont icon-r-refresh" style="font-size: 42px;"> </i>
               <b> 即将上映</b>
             </div>
             <a href="/movie/movieUpcoming">全部</a>
@@ -32,8 +32,8 @@
         </div>
         <div class="panel">
           <div class="panel-header">
-            <div style="color: #ef4238;font-size: 28px;"> 
-              <i class="iconfont icon-r-love" style="font-size: 42px;"> </i> 
+            <div style="color: #ef4238;font-size: 28px;">
+              <i class="iconfont icon-r-love" style="font-size: 42px;"> </i>
               <b> 热播影片</b>
             </div>
             <a href="/movie/movieClassics">全部</a>
@@ -48,8 +48,8 @@
       <div class="right">
         <div class="panel">
           <div class="panel-header">
-            <div style="color: #ffb400;font-size: 28px;"> 
-              <i class="iconfont icon-r-paper" style="font-size: 38px;"> </i> 
+            <div style="color: #ffb400;font-size: 28px;">
+              <i class="iconfont icon-r-paper" style="font-size: 38px;"> </i>
               <b> 票房榜</b>
             </div>
             <a href="/rankingList/totalBoxOfficeList">查看完整榜单</a>
@@ -67,6 +67,9 @@
             </div>
           </div>
         </div>
+        <div class="chat-container">
+          <AiChatBox />
+        </div>
       </div>
     </div>
   </div>
@@ -74,11 +77,13 @@
 
 <script>
 import movieItem from '../../components/movie/movie-item'
+import AiChatBox from '../../components/AiChatBox.vue'
 import moment from 'moment'
 export default {
   name: "Home",
   components: {
-    movieItem
+    movieItem,
+    AiChatBox
   },
   data() {
     return {
@@ -185,6 +190,14 @@ export default {
 .right{
   width: 30%;
   margin-left: 100px;
+}
+
+.chat-container {
+  position: fixed; /* 使对话框悬浮在页面上 */
+  right: 40px;     /* 距离屏幕右侧 20px */
+  bottom: 40px;    /* 距离屏幕底部 20px */
+  width: 300px;    /* 设置对话框的宽度 */
+  z-index: 1000;   /* 提高层级，使其浮在页面上方 */
 }
 
 h2{

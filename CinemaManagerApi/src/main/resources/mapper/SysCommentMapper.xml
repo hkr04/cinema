@@ -38,8 +38,8 @@
 
     <!-- Insert a new comment -->
     <insert id="addComment" parameterType="com.influence.cm.domain.SysComment">
-        INSERT INTO sys_comment (content, content_id, user_id, status, created_at, updated_at)
-        VALUES (#{commentContent}, #{contentId}, #{userId}, #{status}, #{createdAt}, #{updatedAt})
+        INSERT INTO sys_comment (content, author, content_id, user_id, status, created_at, updated_at)
+        VALUES (#{commentContent}, #{contentId}, #{author}, #{userId}, #{status}, #{createdAt}, #{updatedAt})
     </insert>
 
     <!-- Update an existing comment -->

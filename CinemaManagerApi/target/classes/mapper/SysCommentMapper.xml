@@ -8,12 +8,14 @@
     <resultMap id="SysCommentResult" type="com.influence.cm.domain.SysComment">
         <id property="commentId" column="comment_id"/>
         <result property="commentContent" column="content"/>
+        <result property="author" column="author"/>
         <result property="contentId" column="content_id"/>
         <result property="userId" column="user_id"/>
         <result property="status" column="status"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
+
 
     <!-- Find all comments based on filter criteria -->
     <select id="findAllComments" parameterType="com.influence.cm.domain.vo.SysCommentVo" resultMap="SysCommentResult">
@@ -38,8 +40,8 @@
 
     <!-- Insert a new comment -->
     <insert id="addComment" parameterType="com.influence.cm.domain.SysComment">
-        INSERT INTO sys_comment (content, content_id, user_id, status, created_at, updated_at)
-        VALUES (#{commentContent}, #{contentId}, #{userId}, #{status}, #{createdAt}, #{updatedAt})
+        INSERT INTO sys_comment (content, author, content_id, user_id, status, created_at, updated_at)
+        VALUES (#{commentContent}, #{author}, #{contentId}, #{userId}, #{status}, #{createdAt}, #{updatedAt})
     </insert>
 
     <!-- Update an existing comment -->

@@ -217,7 +217,7 @@ export default {
           // If resData is an array, map over it
           commentsArray = resData.map(comment => ({
             id: comment.commentId,
-            username: comment.author || '匿名用户',
+            username: comment.author,
             content: comment.commentContent,
             time: new Date(comment.createdAt).toLocaleString('zh-CN', {
               year: 'numeric',
@@ -231,7 +231,7 @@ export default {
           // If resData is a single object, wrap it in an array
           commentsArray = [{
             id: resData.commentId,
-            username: resData.author || '匿名用户',
+            username: resData.author,
             content: resData.commentContent,
             time: new Date(resData.createdAt).toLocaleString('zh-CN', {
               year: 'numeric',
@@ -273,11 +273,13 @@ export default {
       this.$message.error('用户未登录');
       return;
     }
+    console.log('Current user:', currentUser);
+    console.log('Current username:', currentUser.username);
 
     // Prepare the data object for the backend
     const commentData = {
       commentContent: this.newComment,
-      author: currentUser.username || '匿名用户',
+      author: currentUser.username,
       contentId: this.movieId,
       userId: currentUser.userId,
       status: '1',
@@ -285,6 +287,7 @@ export default {
       // createdAt: new Date().toISOString(),
       // updatedAt: new Date().toISOString(),
     };
+    console.log('Comment Data:', commentData);
 
     try {
       const response = await axios.post('http://localhost:9231/sysComment/', commentData);

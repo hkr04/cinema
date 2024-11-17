@@ -18,13 +18,6 @@ public interface SysCommentMapper {
     List<SysComment> findAllComments(SysCommentVo sysCommentVo);
 
     /**
-     * 根据id查询评论
-     * @param id The ID of the comment.
-     * @return The SysComment object associated with the given ID.
-     */
-    SysComment findCommentById(Long id);
-
-    /**
      * 查询一个评论的信息，不查询相关的其他等信息
      * @param id The ID of the comment.
      * @return The SysComment object associated with the given ID.
@@ -57,7 +50,7 @@ public interface SysCommentMapper {
      * @param contentId The ID of the content (e.g., movie ID) for which comments are being queried.
      * @return A list of SysComment objects related to the content ID.
      */
-    List<SysComment> findByContentId(Long contentId);
+    List<SysComment> findCommentsByContentId(Long contentId);
 
     /**
      * 根据日期范围查询评论
@@ -72,5 +65,4 @@ public interface SysCommentMapper {
      * @return The total count of comments in the system.
      */
     int getTotalCommentCount();
-
 }

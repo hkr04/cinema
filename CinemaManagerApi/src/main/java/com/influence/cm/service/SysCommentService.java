@@ -20,7 +20,7 @@ public interface SysCommentService {
      * @param id The ID of the comment.
      * @return The SysComment object associated with the given ID.
      */
-    SysComment findCommentById(Long id);
+    // SysComment findCommentById(Long id);
 
     /**
      * 查询一个评论的信息，不查询相关的其他等信息
@@ -55,7 +55,9 @@ public interface SysCommentService {
      * @param contentId The ID of the content (e.g., movie ID) for which comments are being queried.
      * @return A list of SysComment objects related to the content ID.
      */
-    List<SysComment> findByContentId(Long contentId);
+    // List<SysComment> findByContentId(Long contentId);
+    List<SysComment> findCommentsByContentId(Long contentId);
+
 
     /**
      * 根据日期范围查询评论

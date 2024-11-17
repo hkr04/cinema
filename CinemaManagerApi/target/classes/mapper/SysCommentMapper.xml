@@ -29,9 +29,10 @@
     </select>
 
     <!-- Find a comment by ID -->
-    <select id="findCommentById" parameterType="Long" resultMap="SysCommentResult">
-        SELECT * FROM sys_comment WHERE content_id = #{id}
+    <select id="findCommentsByContentId" parameterType="Long" resultMap="SysCommentResult">
+        SELECT * FROM sys_comment WHERE content_id = #{contentId}
     </select>
+
 
     <!-- Find one comment by ID (perhaps a simplified version without joins or related entities) -->
     <select id="findOneComment" parameterType="Long" resultType="com.influence.cm.domain.SysComment">

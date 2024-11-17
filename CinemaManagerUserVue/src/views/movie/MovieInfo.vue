@@ -200,60 +200,44 @@ export default {
     },
     // 加入一个提取评论的方法
     async getComments() {
-      try {
-        const { data: res } = await axios.get('sysComment/find/' + this.movieId);
-        console.log('res:', res);
+  try {
+    // 使用新的接口路径
+    const { data: res } = await axios.get(`http://127.0.0.1:9231/sysComment/findByContentId/${this.movieId}`);
+    console.log('评论接口响应:', res);
 
-        if (res.code !== 200) {
-          return this.$message.error('数据查询失败');
-        }
+    if (res.code !== 200) {
+      return this.$message.error('获取评论失败');
+    }
 
-        const resData = res.data;
-        console.log('resData:', resData);
+    // 解析评论数据
+    const resData = res.data;
+    let commentsArray = [];
 
-        let commentsArray = [];
+    if (Array.isArray(resData)) {
+      commentsArray = resData.map((comment) => ({
+        id: comment.commentId,
+        username: comment.author,
+        content: comment.commentContent,
+        time: new Date(comment.createdAt).toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      }));
+    } else {
+      commentsArray = [];
+    }
 
-        if (Array.isArray(resData)) {
-          // If resData is an array, map over it
-          commentsArray = resData.map(comment => ({
-            id: comment.commentId,
-            username: comment.author,
-            content: comment.commentContent,
-            time: new Date(comment.createdAt).toLocaleString('zh-CN', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-          }));
-        } else if (typeof resData === 'object' && resData !== null) {
-          // If resData is a single object, wrap it in an array
-          commentsArray = [{
-            id: resData.commentId,
-            username: resData.author,
-            content: resData.commentContent,
-            time: new Date(resData.createdAt).toLocaleString('zh-CN', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-              hour: '2-digit',
-              minute: '2-digit',
-            }),
-          }];
-        } else {
-          // If resData is neither an array nor an object, set comments to an empty array
-          commentsArray = [];
-        }
+    // 更新评论列表
+    this.comments = commentsArray;
+  } catch (error) {
+    console.error('获取评论时出错:', error);
+    this.$message.error('获取评论失败，请重试');
+  }
+},
 
-        // Assign the commentsArray to this.comments
-        this.comments = commentsArray;
-        console.log(this.comments);
-      } catch (error) {
-        console.error('Error fetching comments:', error);
-        this.$message.error('获取评论失败');
-      }
-    },
 
     //转到购票页面
     toChooseSession(){

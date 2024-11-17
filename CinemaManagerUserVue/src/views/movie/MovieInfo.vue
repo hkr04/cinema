@@ -179,6 +179,7 @@ export default {
   },
   created() {
     this.getMovieInfo()
+    this.getComments()
   },
   methods: {
     async getMovieInfo(){
@@ -198,35 +199,144 @@ export default {
       this.activeName = 'pictures'
     },
     // 加入一个提取评论的方法
-    async getComments(){
-      const {data: res} = await axios.get('sysComment/find/' + this.movieId)
-      if(res.code !== 200) return this.$message.error('数据查询失败')
-      this.comments = res.data
-      console.log(this.comments)
+    async getComments() {
+      try {
+        const { data: res } = await axios.get('sysComment/find/' + this.movieId);
+        console.log('res:', res);
+
+        if (res.code !== 200) {
+          return this.$message.error('数据查询失败');
+        }
+
+        const resData = res.data;
+        console.log('resData:', resData);
+
+        let commentsArray = [];
+
+        if (Array.isArray(resData)) {
+          // If resData is an array, map over it
+          commentsArray = resData.map(comment => ({
+            id: comment.commentId,
+            username: comment.author || '匿名用户',
+            content: comment.commentContent,
+            time: new Date(comment.createdAt).toLocaleString('zh-CN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          }));
+        } else if (typeof resData === 'object' && resData !== null) {
+          // If resData is a single object, wrap it in an array
+          commentsArray = [{
+            id: resData.commentId,
+            username: resData.author || '匿名用户',
+            content: resData.commentContent,
+            time: new Date(resData.createdAt).toLocaleString('zh-CN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          }];
+        } else {
+          // If resData is neither an array nor an object, set comments to an empty array
+          commentsArray = [];
+        }
+
+        // Assign the commentsArray to this.comments
+        this.comments = commentsArray;
+        console.log(this.comments);
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+        this.$message.error('获取评论失败');
+      }
     },
+
     //转到购票页面
     toChooseSession(){
       let cinemaId = 1
       this.$router.push('/chooseSession/' + cinemaId)
     },
     // 添加评论方
-    addComment() {
-      if (!this.newComment.trim()) {
-        this.$message.warning('请输入评论内容')
-        return
-      }
-
-      const comment = {
-        id: this.comments.length + 1,
-        username: '当前用户',
-        content: this.newComment,
-        time: new Date().toLocaleString()
-      }
-
-      this.comments.unshift(comment)
-      this.newComment = ''
-      this.$message.success('评论成功')
+    async addComment() {
+    if (!this.newComment.trim()) {
+      this.$message.warning('请输入评论内容');
+      return;
     }
+
+    // Get current user info
+    const currentUser = this.getCurrentUser(); // Implement this method based on your authentication system
+    if (!currentUser) {
+      this.$message.error('用户未登录');
+      return;
+    }
+
+    // Prepare the data object for the backend
+    const commentData = {
+      commentContent: this.newComment,
+      author: currentUser.username || '匿名用户',
+      contentId: this.movieId,
+      userId: currentUser.userId,
+      status: '1',
+      // You can omit createdAt and updatedAt if the backend sets them automatically
+      // createdAt: new Date().toISOString(),
+      // updatedAt: new Date().toISOString(),
+    };
+
+    try {
+      const response = await axios.post('http://localhost:9231/sysComment/', commentData);
+      console.log('Add comment response:', response.data);
+
+      if (response.data.code !== 200) {
+        this.$message.error('评论失败');
+        return;
+      }
+
+      this.$message.success('评论成功');
+      
+      // Option 1: Refresh comments from the backend
+      await this.getComments();
+
+      // Option 2: Add the new comment to this.comments manually
+      // this.comments.unshift({
+      //   id: response.data.data.commentId, // Use the ID returned by the backend
+      //   username: commentData.author,
+      //   content: commentData.commentContent,
+      //   time: new Date().toLocaleString('zh-CN', {
+      //     year: 'numeric',
+      //     month: '2-digit',
+      //     day: '2-digit',
+      //     hour: '2-digit',
+      //     minute: '2-digit',
+      //   }),
+      // });
+
+      // Clear the input field
+      this.newComment = '';
+    } catch (error) {
+      console.error('Error adding comment:', error);
+      this.$message.error('评论失败，请重试');
+    }
+  },
+
+  // Implement this method to retrieve the current user information
+  getCurrentUser() {
+    // This method should return an object with userId and username
+    // For example, if you're using Vuex:
+    // return this.$store.state.user;
+    
+    // If you're storing user info in localStorage:
+    // return JSON.parse(localStorage.getItem('user'));
+
+    // Placeholder implementation:
+    return {
+      userId: 2, // Replace with actual user ID
+      username: '当前用户', // Replace with actual username
+    };
+  },
   }
 };
 </script>

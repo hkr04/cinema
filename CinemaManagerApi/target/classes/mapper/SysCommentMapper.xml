@@ -28,7 +28,7 @@
 
     <!-- Find a comment by ID -->
     <select id="findCommentById" parameterType="Long" resultMap="SysCommentResult">
-        SELECT * FROM sys_comment WHERE comment_id = #{id}
+        SELECT * FROM sys_comment WHERE content_id = #{id}
     </select>
 
     <!-- Find one comment by ID (perhaps a simplified version without joins or related entities) -->

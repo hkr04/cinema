@@ -128,6 +128,16 @@
                       <div class="comment-info">
                         <span class="comment-user">{{ comment.username }}</span>
                         <span class="comment-time">{{ comment.time }}</span>
+                        <!-- 删除按钮 -->
+                          <el-button 
+                            type="text" 
+                            size="small" 
+                            icon="el-icon-delete" 
+                            @click="deleteComment(comment.id)"
+                            style="color: red;"
+                          >
+                            删除
+                          </el-button>
                       </div>
                       <div class="comment-content">{{ comment.content }}</div>
                     </el-card>
@@ -200,43 +210,74 @@ export default {
     },
     // 加入一个提取评论的方法
     async getComments() {
-  try {
-    // 使用新的接口路径
-    const { data: res } = await axios.get(`http://127.0.0.1:9231/sysComment/findByContentId/${this.movieId}`);
-    console.log('评论接口响应:', res);
+      try {
+        // 使用新的接口路径
+        const { data: res } = await axios.get(`http://127.0.0.1:9231/sysComment/findByContentId/${this.movieId}`);
+        console.log('评论接口响应:', res);
 
-    if (res.code !== 200) {
-      return this.$message.error('获取评论失败');
-    }
+        if (res.code !== 200) {
+          return this.$message.error('获取评论失败');
+        }
 
-    // 解析评论数据
-    const resData = res.data;
-    let commentsArray = [];
+        // 解析评论数据
+        const resData = res.data;
+        let commentsArray = [];
 
-    if (Array.isArray(resData)) {
-      commentsArray = resData.map((comment) => ({
-        id: comment.commentId,
-        username: comment.author,
-        content: comment.commentContent,
-        time: new Date(comment.createdAt).toLocaleString('zh-CN', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-        }),
-      }));
-    } else {
-      commentsArray = [];
-    }
+        if (Array.isArray(resData)) {
+          commentsArray = resData.map((comment) => ({
+            id: comment.commentId,
+            username: comment.author,
+            content: comment.commentContent,
+            time: new Date(comment.createdAt).toLocaleString('zh-CN', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          }));
+        } else {
+          commentsArray = [];
+        }
 
-    // 更新评论列表
-    this.comments = commentsArray;
-  } catch (error) {
-    console.error('获取评论时出错:', error);
-    this.$message.error('获取评论失败，请重试');
-  }
-},
+        // 更新评论列表
+        this.comments = commentsArray;
+      } catch (error) {
+        console.error('获取评论时出错:', error);
+        this.$message.error('获取评论失败，请重试');
+      }
+    },
+      // 删除评论方法
+      async deleteComment(commentId) {
+        try {
+          // 弹窗确认是否删除
+          const confirm = await this.$confirm(
+            '确定要删除这条评论吗？',
+            '提示',
+            {
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning',
+            }
+          );
+
+          if (confirm) {
+            // 调用后端删除评论接口
+            const { data: res } = await axios.delete(`http://127.0.0.1:9231/sysComment/${commentId}`);
+            if (res.code !== 200) {
+              return this.$message.error('删除评论失败');
+            }
+
+            this.$message.success('评论已删除');
+            // 重新获取评论列表
+            await this.getComments();
+          }
+        } catch (error) {
+          console.error('删除评论时出错:', error);
+          this.$message.error('删除评论失败，请重试');
+        }
+      },
+
 
 
     //转到购票页面

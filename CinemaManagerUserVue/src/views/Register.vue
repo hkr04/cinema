@@ -1,14 +1,14 @@
 <template>
   <div class="register-container">
     <div style="width: 100%; text-align: center;margin: 20px 0 20px 0">
-      
-            <div style="font-size: 28px;"> 
-              <i class="iconfont icon-r-add" style="font-size: 32px;"> </i> 
+
+            <div style="font-size: 28px;">
+              <i class="iconfont icon-r-add" style="font-size: 32px;"> </i>
               <b> 注册新用户</b>
             </div>
     </div>
     <div class="register-body">
-      
+
       <el-form class="register-form" ref="registerFormRef" :model="registerForm" :rules="registerFormRules" label-width="80px">
         <el-form-item label="用户名" prop="userName">
           <el-input v-model="registerForm.userName" placeholder="请输入用户名" clearable></el-input>
@@ -38,7 +38,7 @@
     </div>
     <div class="footer-mini"></div>
     <div class="footer">
-      Copyright©忧伤大白兔
+      Copyright©幕后英雌
     </div>
   </div>
 </template>

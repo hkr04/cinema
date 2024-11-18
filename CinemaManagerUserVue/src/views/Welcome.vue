@@ -75,7 +75,7 @@
         <el-footer>
             <div class="footer-mini"></div>
             <div class="footer" style="padding-bottom: 15px">
-                Copyright©忧伤大白兔
+                Copyright©幕后英雌
             </div>
             <el-backtop></el-backtop>
         </el-footer>

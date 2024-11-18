@@ -397,8 +397,6 @@ export default {
   created() {
     this.getMovieList()
     this.getCategoryList()
-    this.getMovieInfo();
-    this.getComments(); // Fetch comments when the component is created
   },
   methods: {
     getMovieList() {

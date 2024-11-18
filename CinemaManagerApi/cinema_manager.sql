@@ -413,3 +413,28 @@ INSERT INTO `sys_user` VALUES (1, 'admin', '2f6b5c3044b271f5c07545aa862cf35c', '
 INSERT INTO `sys_user` VALUES (2, 'user', 'de24bcd64d58e024b252268641a672de', 'DIm1GWgN', '123@qq.com', '13333333333', 1, '[\"/images/user/2023/07/08/b7d88e8b54d84818826f1c1f87de835e.jpg\"]', 3, '2023-07-12', NULL, 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- ----------------------------
+-- Table structure for sys_comment
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_comment`;
+CREATE TABLE `sys_comment` (
+  `comment_id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '评论ID',
+  `content_id` BIGINT(20) UNSIGNED NOT NULL COMMENT '关联的内容ID，可能是电影或影厅等',
+  `user_id` BIGINT(20) UNSIGNED DEFAULT NULL COMMENT '用户编号，关联用户表，允许为空',
+  `author` VARCHAR(100) DEFAULT NULL COMMENT '评论作者',
+  `content` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '评论内容',
+  `status` TINYINT(4) NOT NULL DEFAULT 1 COMMENT '评论状态，0为删除，1为有效',
+  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '评论创建时间，默认为当前时间',
+  `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '评论更新时间，自动更新为当前时间',
+  PRIMARY KEY (`comment_id`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+
+-- ----------------------------
+-- Records of sys_comment
+-- ----------------------------
+INSERT INTO `sys_comment` (comment_id, content_id, user_id, content, status, created_at, updated_at) VALUES (101, 2, 1, '这是一条评论内容', 1, '2023-07-08 12:30:00', '2023-07-08 12:30:00');
+INSERT INTO `sys_comment` (comment_id, content_id, user_id, content, status, created_at, updated_at) VALUES (102, 3, 1, '这是另一条评论内容', 1, '2023-07-08 13:30:00', '2023-07-08 13:30:00');

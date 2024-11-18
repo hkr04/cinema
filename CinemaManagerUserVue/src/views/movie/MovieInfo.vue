@@ -4,36 +4,52 @@
       <div class="header-inner clearfix">
         <div class="movie-info-left">
           <div class="avatar-shadow">
-            <img class="avatar" :src="movieInfo.moviePoster">
+            <img class="avatar" :src="movieInfo.moviePoster" />
           </div>
         </div>
         <div class="movie-info-right">
           <div class="movie-info-msg">
-            <h1 class="movie-name">{{movieInfo.movieName}}</h1>
+            <h1 class="movie-name">{{ movieInfo.movieName }}</h1>
             <ul>
-              <li>{{movieInfo.movieCategoryList}}</li>
-              <li>{{movieInfo.movieArea}} / {{movieInfo.movieLength}}分钟</li>
-              <li>{{movieInfo.releaseDate}} {{movieInfo.movieArea}} 上映</li>
+              <li>{{ movieInfo.movieCategoryList }}</li>
+              <li>
+                {{ movieInfo.movieArea }} / {{ movieInfo.movieLength }}分钟
+              </li>
+              <li>
+                {{ movieInfo.releaseDate }} {{ movieInfo.movieArea }} 上映
+              </li>
             </ul>
           </div>
           <!-- 电影评分 -->
-            <div class="movie-rating">
+          <div class="movie-rating">
             <!-- <span class="movie-rating-title">评分：</span> -->
-            <el-rate v-model="movieInfo.movieRating" :max="5" allow-half
-            void-color="white"
-            disabled-void-color="#d3d3d3"
-            class="custom-rate">
+            <el-rate
+              v-model="movieInfo.movieRating"
+              :max="5"
+              allow-half
+              void-color="white"
+              disabled-void-color="#d3d3d3"
+              class="custom-rate"
+              @change="handleRatingChange"
+            >
             </el-rate>
-            </div>
+          </div>
           <div class="movie-info-btn">
-            <el-button class="buy-btn" type="primary" @click="toChooseSession" style="font-size: 22px;">
-              <i class="iconfont icon-r-yes" style="font-size: 26px;"></i> 特惠购票</el-button>
+            <el-button
+              class="buy-btn"
+              type="primary"
+              @click="toChooseSession"
+              style="font-size: 22px"
+            >
+              <i class="iconfont icon-r-yes" style="font-size: 26px"></i>
+              特惠购票</el-button
+            >
           </div>
           <div class="movie-info-score">
             <div class="movie-index box-office-container">
               <span class="movie-index-title">累计票房</span>
-              <div style="display: flex;align-items: flex-end;">
-                <span class="box-office">{{movieInfo.movieBoxOffice}}</span>
+              <div style="display: flex; align-items: flex-end">
+                <span class="box-office">{{ movieInfo.movieBoxOffice }}</span>
                 <span class="unit">元</span>
               </div>
             </div>
@@ -46,7 +62,8 @@
       <div class="movie-info-detail clearfix">
         <div class="main-content">
           <div class="crumbs-nav-container">
-            <a href="/welcome">影响力</a> &gt; <a href="/movie">电影</a> &gt; {{movieInfo.movieName}}
+            <a href="/welcome">影响力</a> &gt; <a href="/movie">电影</a> &gt;
+            {{ movieInfo.movieName }}
           </div>
           <el-tabs v-model="activeName">
             <el-tab-pane label="介绍" name="introduction">
@@ -58,7 +75,7 @@
                   </div>
                   <div class="mod-content">
                     <span class="dra">
-                      {{movieInfo.movieIntroduction}}
+                      {{ movieInfo.movieIntroduction }}
                     </span>
                   </div>
                 </div>
@@ -74,18 +91,22 @@
                         暂无图片资源
                       </div>
                       <el-image
-                          class="default-img"
-                          :src="movieInfo.moviePictures[0]"
-                          :preview-src-list="movieInfo.moviePictures"
-                          v-if="movieInfo.moviePictures.length > 0">
+                        class="default-img"
+                        :src="movieInfo.moviePictures[0]"
+                        :preview-src-list="movieInfo.moviePictures"
+                        v-if="movieInfo.moviePictures.length > 0"
+                      >
                       </el-image>
                       <div class="little-pictures">
                         <el-image
-                            class="default-img"
-                            v-for="(item,index) in movieInfo.moviePictures.slice(1)"
-                            :key="index"
-                            :src="item"
-                            :preview-src-list="movieInfo.moviePictures">
+                          class="default-img"
+                          v-for="(item, index) in movieInfo.moviePictures.slice(
+                            1
+                          )"
+                          :key="index"
+                          :src="item"
+                          :preview-src-list="movieInfo.moviePictures"
+                        >
                         </el-image>
                       </div>
                     </div>
@@ -101,12 +122,13 @@
                       暂无图片资源
                     </div>
                     <el-image
-                        fit="cover"
-                        class="default-img"
-                        v-for="(item,index) in movieInfo.moviePictures"
-                        :key="index"
-                        :src="item"
-                        :preview-src-list="movieInfo.moviePictures">
+                      fit="cover"
+                      class="default-img"
+                      v-for="(item, index) in movieInfo.moviePictures"
+                      :key="index"
+                      :src="item"
+                      :preview-src-list="movieInfo.moviePictures"
+                    >
                     </el-image>
                   </div>
                 </div>
@@ -120,92 +142,106 @@
 </template>
 
 <script>
-import movieItem from './../../components/movie/movie-item';
-import { Rate } from 'element-ui';
-import moment from 'moment'
+import movieItem from "./../../components/movie/movie-item";
+import { Rate } from "element-ui";
+import axios from "axios"; // 确保引入 axios
+import moment from "moment";
 
 export default {
   name: "MovieInfo",
-  components:{
+  components: {
     movieItem,
-    'el-rate': Rate
+    "el-rate": Rate,
   },
   data() {
     return {
       movieInfo: {
         moviePictures: [],
-        movieRating: 4.5 // 示例评分
+        movieRating: 4.5, // 示例评分
       },
       movieId: this.$route.params.movieId,
-      activeName: 'introduction',
-      colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
-      httpURL: this.global.base
-    }
+      activeName: "introduction",
+      colors: ["#99A9BF", "#F7BA2A", "#FF9900"],
+      httpURL: this.global.base,
+    };
   },
   created() {
-    this.getMovieInfo()
+    this.getMovieInfo();
   },
   methods: {
-    async getMovieInfo(){
-      const _this = this
-      const {data : res} = await axios.get('sysMovie/find/' + this.movieId)
-      if(res.code !== 200) return this.$message.error('数据查询失败')
-      this.movieInfo = res.data
-      this.movieInfo.moviePoster = this.httpURL + JSON.parse(res.data.moviePoster)[0]
-      this.movieInfo.moviePictures = JSON.parse(this.movieInfo.moviePictures).map((obj, index) => {
-        return this.httpURL + obj
-      })
-      this.movieInfo.movieCategoryList = this.movieInfo.movieCategoryList.map((obj,index) => {
-        return obj.movieCategoryName;
-      }).join(" ")
+    async getMovieInfo() {
+      const _this = this;
+      const { data: res } = await axios.get("sysMovie/find/" + this.movieId);
+      if (res.code !== 200) return this.$message.error("数据查询失败");
+      this.movieInfo = res.data;
+      this.movieInfo.moviePoster =
+        this.httpURL + JSON.parse(res.data.moviePoster)[0];
+      this.movieInfo.moviePictures = JSON.parse(
+        this.movieInfo.moviePictures
+      ).map((obj, index) => {
+        return this.httpURL + obj;
+      });
+      this.movieInfo.movieCategoryList = this.movieInfo.movieCategoryList
+        .map((obj, index) => {
+          return obj.movieCategoryName;
+        })
+        .join(" ");
     },
-    showPictures(){
-      this.activeName = 'pictures'
+    showPictures() {
+      this.activeName = "pictures";
     },
     //转到购票页面
-    toChooseSession(){
-      let cinemaId = 1
-      this.$router.push('/chooseSession/' + cinemaId)
-    }
-  }
-}
+    toChooseSession() {
+      let cinemaId = 1;
+      this.$router.push("/chooseSession/" + cinemaId);
+    },
+    handleRatingChange(value) {
+      this.movieInfo.movieRating = value; // 更新评分
+      this.$message({
+        message: `评分完成！<br><br> 您对电影《${this.movieInfo.movieName}》评分为 ${value} 星`,
+        type: "success",
+        dangerouslyUseHTMLString: true,
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>
-.movie-container{
-
+.movie-container {
 }
 
-a{
+a {
   text-decoration: none;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-.header{
+.header {
   padding: 0;
   width: 100%;
   min-width: 1200px;
   /* background: url('../../assets/movie-info-background.jpg') */
 
-  background: radial-gradient( pink, lightblue);
+  background: radial-gradient(pink, lightblue);
 }
 
-.header-inner{
+.header-inner {
   width: 1200px;
   margin: 0 auto;
   position: relative;
 }
 
-.clearfix::before, .clearfix::after{
+.clearfix::before,
+.clearfix::after {
   content: " ";
   display: table;
 }
 
-.clearfix::after{
+.clearfix::after {
   clear: both;
 }
 
-.movie-info-left{
+.movie-info-left {
   width: 300px;
   height: 370px;
   float: left;
@@ -215,29 +251,30 @@ a{
   z-index: 9;
 }
 
-.avatar-shadow{
+.avatar-shadow {
   position: relative;
   margin: 0 30px;
   width: 240px;
   height: 330px;
   padding-bottom: 40px;
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAAyAgMAAAAfG76+AAAADFBMVEUAAAAAAAAAAAAAAAA16TeWAAAABHRSTlMOAgoGQ0SIeAAAADpJREFUSMdjGAWjYBRgAasoAAwdFACKbB7VPEI076YAUGbzfwrAqOYRormcAjCANodSAEY1j2oexJoBlx1+yE7RXIIAAAAASUVORK5CYII=) no-repeat bottom;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAAAyAgMAAAAfG76+AAAADFBMVEUAAAAAAAAAAAAAAAA16TeWAAAABHRSTlMOAgoGQ0SIeAAAADpJREFUSMdjGAWjYBRgAasoAAwdFACKbB7VPEI076YAUGbzfwrAqOYRormcAjCANodSAEY1j2oexJoBlx1+yE7RXIIAAAAASUVORK5CYII=)
+    no-repeat bottom;
 }
 
-.avatar{
+.avatar {
   border: 4px solid #fff;
   height: 322px;
   width: 232px;
 }
 
-.movie-info-msg{
+.movie-info-msg {
   position: absolute;
   color: black;
   font-size: 14px;
   z-index: 1;
 }
 
-.movie-name{
+.movie-name {
   width: 900px;
   margin-top: 0;
   font-size: 26px;
@@ -252,26 +289,26 @@ a{
   max-height: 64px;
 }
 
-.movie-ename{
+.movie-ename {
   width: 340px;
   font-size: 18px;
   line-height: 1.3;
   margin-bottom: 14px;
 }
 
-ul{
+ul {
   width: 250px;
   list-style: none;
   padding-left: 0;
   margin-bottom: 20px;
 }
 
-ul li{
+ul li {
   margin: 12px 0;
   line-height: 100%;
 }
 
-.movie-info-btn{
+.movie-info-btn {
   position: absolute;
   bottom: 20px;
 }
@@ -287,14 +324,14 @@ ul li{
   margin-right: 10px;
 } */
 
-.buy-btn{
+.buy-btn {
   margin-top: 10px;
   width: 250px;
   font-size: 16px;
   text-align: center;
 }
 
-.movie-info-score{
+.movie-info-score {
   position: absolute;
   top: 145px;
   left: 342px;
@@ -305,17 +342,17 @@ ul li{
   color: black;
 }
 
-.box-office-container{
+.box-office-container {
   display: flex;
   flex-direction: column;
 }
 
-.movie-index-title{
+.movie-index-title {
   font-size: 12px;
   margin-bottom: 8px;
 }
 
-.movie-score-num{
+.movie-score-num {
   font-size: 30px;
   color: #ffc600;
   height: 30px;
@@ -323,24 +360,24 @@ ul li{
   margin-right: 10px;
 }
 
-.score-container{
+.score-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 12px;
 }
 
-.box-office{
+.box-office {
   font-size: 30px;
 }
 
-.unit{
+.unit {
   font-size: 12px;
   padding-left: 1px;
   line-height: 24px;
 }
 
-.movie-info-right{
+.movie-info-right {
   height: 300px;
   position: relative;
   margin-right: 30px;
@@ -348,12 +385,12 @@ ul li{
   margin-top: 70px;
 }
 
-.movie-info-detail-container{
-  width:1200px;
+.movie-info-detail-container {
+  width: 1200px;
   margin: 0 auto;
 }
 
-.movie-info-detail{
+.movie-info-detail {
   margin-top: 80px;
 }
 
@@ -368,24 +405,24 @@ ul li{
   color: #333;
 }
 
-.crumbs-nav-container a{
+.crumbs-nav-container a {
   color: inherit;
 }
 
-.el-tabs >>> .el-tabs__item{
+.el-tabs >>> .el-tabs__item {
   font-size: 20px;
 }
 
-.tab-body{
+.tab-body {
   margin-top: 40px;
 }
 
-.module{
+.module {
   position: relative;
   margin-bottom: 60px;
 }
 
-.mod-title h2{
+.mod-title h2 {
   display: inline-block;
   margin: 0;
   padding: 0;
@@ -402,57 +439,58 @@ ul li{
   width: 4px;
   height: 18px;
   margin-right: 6px;
-  background-color: #409EFF;
+  background-color: #409eff;
 }
 
-.mod-content{
+.mod-content {
   margin-top: 20px;
   color: #333;
 }
 
-.mod-content .dra{
+.mod-content .dra {
   font-size: 14px;
   line-height: 26px;
 }
 
-.more{
+.more {
   float: right;
   cursor: pointer;
   font-size: 14px;
   color: #999;
   padding-right: 14px;
-  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAOCAYAAAASVl2WAAAABmJLR0QA/wD/AP+gvaeTAAAAv0lEQVQY013RTUpDQRAE4G8eghcR8ScgKCIugpJFjuIjqAvBc7jxj0muEnCjiIQQJOImB3GnbnpkfL1qpqqrunpSzvkDPxjhGdq2VarBF3q4wRHknP8RzvCEQzzguCalaHZwiwHecY6XogCf8TjFHh7Rh9Tx3AylIZa4TgWpSBuY4BSrYlFXKsr4bjrTW5HkJJa9SBW4jbtukmKxG5MDLOKqfzEPcB9LzQN8LSdfwxj7eMMlZvV/NFiPzFddEH4Bt5Y1mf3fnDwAAAAASUVORK5CYII=) no-repeat 100%;
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAOCAYAAAASVl2WAAAABmJLR0QA/wD/AP+gvaeTAAAAv0lEQVQY013RTUpDQRAE4G8eghcR8ScgKCIugpJFjuIjqAvBc7jxj0muEnCjiIQQJOImB3GnbnpkfL1qpqqrunpSzvkDPxjhGdq2VarBF3q4wRHknP8RzvCEQzzguCalaHZwiwHecY6XogCf8TjFHh7Rh9Tx3AylIZa4TgWpSBuY4BSrYlFXKsr4bjrTW5HkJJa9SBW4jbtukmKxG5MDLOKqfzEPcB9LzQN8LSdfwxj7eMMlZvV/NFiPzFddEH4Bt5Y1mf3fnDwAAAAASUVORK5CYII=)
+    no-repeat 100%;
 }
 
-.portrait{
+.portrait {
   margin-bottom: 6px;
   width: 128px;
   height: 170px;
   overflow: hidden;
 }
 
-.portrait .default-img{
+.portrait .default-img {
   width: 128px;
   height: 170px;
 }
 
-.pictures-list{
+.pictures-list {
   display: flex;
 }
 
-.pictures-list>.el-image:first-child{
+.pictures-list > .el-image:first-child {
   width: 465px;
   height: 258px;
 }
 
-.pictures-list .default-img{
+.pictures-list .default-img {
   border-style: none;
   cursor: pointer;
   width: 126px;
   height: 126px;
 }
 
-.little-pictures{
+.little-pictures {
   width: 262px;
   height: 262px;
   display: flex;
@@ -461,30 +499,28 @@ ul li{
   justify-content: space-between;
 }
 
-#pane-pictures .little-pictures{
+#pane-pictures .little-pictures {
   width: 100%;
   justify-content: flex-start;
   margin-left: 0;
 }
 
-#pane-pictures .default-img{
+#pane-pictures .default-img {
   margin-top: 10px;
   margin-left: 10px;
 }
 
-.user-avatar{
+.user-avatar {
   width: 50px;
   height: 50px;
   margin-right: 20px;
 }
 
-
-.main-header{
+.main-header {
   font-size: 16px;
 }
 
-.user-name{
+.user-name {
   margin-top: 2px;
 }
-
 </style>

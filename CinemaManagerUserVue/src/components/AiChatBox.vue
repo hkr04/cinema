@@ -23,7 +23,9 @@ export default {
   name: "AiChatBox",
   data() {
     return {
-      messages: [{ role: "system", content: "" }],
+      messages: [
+        { role: "system", content: "你好，我是影响力智能影院助手，为你提供电影问答与推荐服务~！" },
+      ],
       userInput: "",
       md: new MarkdownIt()
     };
@@ -43,7 +45,9 @@ export default {
 
       try {
         const response = await axios.post(
-            'https://api.deepseek.com/chat/completions',
+            // 'https://api.deepseek.com/chat/completions',
+            'http://localhost:8080/v1/chat/completions',
+
             {
               messages: this.messages,
               model: "deepseek-chat",
@@ -61,7 +65,7 @@ export default {
 
       } catch (error) {
         console.error("错误:", error);
-        this.messages.push({ role: "assistant", content: "抱歉，出现了错误。" });
+        this.messages.push({ role: "assistant", content: "抱歉，出现了错误。\n" + error });
       }
     },
     streamOutput(content) {

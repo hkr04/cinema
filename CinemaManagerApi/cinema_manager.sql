@@ -59,7 +59,7 @@ CREATE TABLE `sys_cinema`  (
 -- ----------------------------
 -- Records of sys_cinema
 -- ----------------------------
-INSERT INTO `sys_cinema` VALUES (1, '兔兔影院', '[\"N号激光厅\", \"IMAX巨幕厅\"]', '[\"/images/cinema/2023/07/03/92084bfd162a4a4698b77332c83700a0.jpg\"]', '010-8888-8888', '北京市海淀区', '00:00', '23:59');
+INSERT INTO `sys_cinema` VALUES (1, '梅操影院', '[\"N号激光厅\", \"IMAX巨幕厅\"]', '[\"/images/cinema/2023/07/03/92084bfd162a4a4698b77332c83700a0.jpg\"]', '010-8888-8888', '武汉市武昌区', '00:00', '23:59');
 
 -- ----------------------------
 -- Table structure for sys_hall
@@ -431,7 +431,7 @@ CREATE TABLE `sys_comment` (
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '评论创建时间，默认为当前时间',
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '评论更新时间，自动更新为当前时间',
   PRIMARY KEY (`comment_id`)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_comment

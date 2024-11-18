@@ -1,5 +1,18 @@
 <template>
   <div>
+    <!-- 新增推荐电影走马灯 -->
+    <el-carousel :height="carouselHeight" trigger="click" :interval="4000" type="card" class="movie-carousel">
+      <el-carousel-item v-for="(item, index) in recommendMovies" :key="index">
+        <div class="carousel-content">
+          <img :src="item.posterUrl" :alt="item.title">
+          <div class="carousel-info">
+            <h3>{{ item.title }}</h3>
+            <p class="rating">评分: {{ item.rating }}</p>
+          </div>
+        </div>
+      </el-carousel-item>
+    </el-carousel>
+
     <div class="whole">
       <div class="left">
         <div class="panel">
@@ -112,7 +125,25 @@ export default {
       ongoingMovieList: [],
       upcomingMovieList: [],
       classicMovieList: [],
-      totalBoxOfficeList: []
+      totalBoxOfficeList: [],
+      carouselHeight: '400px',
+      recommendMovies: [
+        {
+          title: "信条",
+          posterUrl: "https://x0.ifengimg.com/ucms/2020_36/687F0630BD5F128C765AF1489558C8E84A361A12_w7087_h5358.jpg",
+          rating: "9.5"
+        },
+        {
+          title: "降临",
+          posterUrl: "https://image11.m1905.cn/uploadfile/2017/0120/20170120090238117530_watermark.jpg",
+          rating: "9.2"
+        },
+        {
+          title: "星际穿越",
+          posterUrl: "https://pic.rmb.bdstatic.com/bjh/news/b161ae295b09a29353edeb126ef48879.jpeg",
+          rating: "9.0"
+        },
+      ]
     }
   },
   created() {
@@ -277,6 +308,45 @@ h2{
 
 .panel-content{
   margin: 0px 0px 50px 0px;
+}
+
+.movie-carousel {
+  width: 60%;
+  margin: 20px auto;
+}
+
+.carousel-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.carousel-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.carousel-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+  color: white;
+  border-radius: 0 0 8px 8px;
+}
+
+.carousel-info h3 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.carousel-info .rating {
+  margin: 8px 0 0;
+  font-size: 16px;
 }
 
 </style>

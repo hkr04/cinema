@@ -27,7 +27,7 @@
     </select>
 
     <!-- Find a comment by ID -->
-    <select id="findCommentById" parameterType="Long" resultMap="SysCommentResult">
+    <select id="findCommentsByContentId" parameterType="Long" resultMap="SysCommentResult">
         SELECT * FROM sys_comment WHERE content_id = #{id}
     </select>
 
@@ -38,7 +38,7 @@
 
     <!-- Insert a new comment -->
     <insert id="addComment" parameterType="com.influence.cm.domain.SysComment">
-        INSERT INTO sys_comment (content, author, content_id, user_id, status, created_at, updated_at)
+        INSERT INTO sys_comment (content, content_id, author, user_id, status, created_at, updated_at)
         VALUES (#{commentContent}, #{contentId}, #{author}, #{userId}, #{status}, #{createdAt}, #{updatedAt})
     </insert>
 

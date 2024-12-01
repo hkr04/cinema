@@ -16,8 +16,60 @@
               <li>{{movieInfo.releaseDate}} {{movieInfo.movieArea}} 上映</li>
             </ul>
           </div>
+          <!-- 电影评分 -->
+          <div class="movie-rating">
+            <!-- <span class="movie-rating-title">评分：</span> -->
+            <el-rate v-model="movieInfo.movieRating" :max="5" allow-half
+                     void-color="white"
+                     disabled-void-color="#d3d3d3"
+                     class="custom-rate">
+            </el-rate>
+          </div>
           <div class="movie-info-btn">
-            <el-button class="buy-btn" type="primary" @click="toChooseSession" style="font-size: 22px;"><i class="iconfont icon-r-yes" style="font-size: 26px;"></i> 特惠购票</el-button>
+            <el-button class="buy-btn" type="primary" @click="toChooseSession" style="font-size: 22px;">
+              <i class="iconfont icon-r-yes" style="font-size: 26px;"></i> 特惠购票</el-button>
+
+            <el-button class="vote-btn" type="success" @click="openDatePicker" style="font-size: 22px; margin-left: 10px;">
+              <i class="el-icon-date" style="font-size: 26px;"></i> 票选放映时段
+            </el-button>
+
+            <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="30%">
+              <div v-if="!voteSubmitted">
+                <el-form :model="formdata" style="margin-top: 10px;">
+                  <el-form-item class="edit-form-wrap">
+                    <el-time-picker
+                      v-model="formdata.starttime"
+                      placeholder="起始时间"
+                      :value-format="pickerFormatText"
+                      :format="pickerFormatText"
+                      :picker-options="{
+                          selectableRange: '08:00:00 - 23:59:00',
+                          format: pickerFormatText
+                        }"
+                      @change="changeTime"
+                    ></el-time-picker>
+                    <span>-</span>
+                    <el-time-picker
+                      v-model="formdata.endtime"
+                      placeholder="结束时间"
+                      :value-format="pickerFormatText"
+                      :format="pickerFormatText"
+                      :picker-options="{
+                          selectableRange: `${minPickerTime} - 23:59:00`,
+                          format: pickerFormatText
+                        }"
+                    ></el-time-picker>
+                  </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="dialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="VoteSuccess">提交</el-button>
+                  </span>
+              </div>
+              <div v-else>
+                <p>5秒后返回首页...</p>
+              </div>
+            </el-dialog>
           </div>
           <div class="movie-info-score">
             <div class="movie-index box-office-container">
@@ -113,9 +165,9 @@
                       :rows="3"
                       placeholder="写下你的评论..."
                     />
-                    <el-button 
-                      type="primary" 
-                      @click="addComment" 
+                    <el-button
+                      type="primary"
+                      @click="addComment"
                       style="margin-top: 10px;"
                     >
                       发表评论
@@ -129,10 +181,10 @@
                         <span class="comment-user">{{ comment.username }}</span>
                         <span class="comment-time">{{ comment.time }}</span>
                         <!-- 删除按钮 -->
-                          <el-button 
-                            type="text" 
-                            size="small" 
-                            icon="el-icon-delete" 
+                          <el-button
+                            type="text"
+                            size="small"
+                            icon="el-icon-delete"
                             @click="deleteComment(comment.id)"
                             style="color: red;"
                           >
@@ -155,20 +207,33 @@
 <script>
 import movieItem from './../../components/movie/movie-item';
 import moment from 'moment'
+import { Rate } from 'element-ui';
 export default {
   name: "MovieInfo",
   components:{
-    movieItem
+    movieItem,
+    'el-rate': Rate
   },
   data() {
     return {
       movieInfo: {
-        moviePictures: []
+        moviePictures: [],
+        movieRating: 4.5 // 示例评分
       },
       movieId: this.$route.params.movieId,
       activeName: 'introduction',
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
       httpURL: this.global.base,
+      dialogVisible: false,
+      dialogTitle: "您希望电影在哪个时间段内开场？",
+
+      formdata: {
+        starttime: '',
+        endtime: ''
+      },
+      minPickerTime: '08:00:00',
+      pickerFormatText: 'HH:mm',
+      voteSubmitted: false,
       // 添加评论相关数据
       newComment: '',
       comments: [
@@ -192,6 +257,40 @@ export default {
     this.getComments()
   },
   methods: {
+    //票选
+    openDatePicker() {
+      this.dialogVisible = true;
+      this.voteSubmitted = false;
+    },
+    VoteSuccess() {
+      // 显示“已投票”文本
+      this.voteSubmitted = true;
+      this.dialogTitle = "投票成功";
+
+      // 在2秒后自动关闭对话框
+      setTimeout(() => {
+        this.dialogVisible = false;
+      }, 5000);
+    },
+
+    async submitVote() {
+      if (this.selectedDateRange.length === 2) {
+        const voteData = {
+          user_id: this.user_id,            // 用户 ID
+          movie_id: this.movieId,           // 电影 ID
+          vote_time_start: this.selectedDateRange[0], // 用户选择的开始时间
+          vote_time_end: this.selectedDateRange[1],   // 用户选择的结束时间
+        };
+
+        try {
+          // 提交投票数据的代码...
+        } catch (error) {
+          this.$message.error('网络错误，无法提交投票');
+        }
+      } else {
+        this.$message.error('请选择一个时间段');
+      }
+    },
     async getMovieInfo(){
       const _this = this
       const {data : res} = await axios.get('sysMovie/find/' + this.movieId)
@@ -324,7 +423,7 @@ export default {
       }
 
       this.$message.success('评论成功');
-      
+
       // Option 1: Refresh comments from the backend
       await this.getComments();
 
@@ -355,7 +454,7 @@ export default {
     // This method should return an object with userId and username
     // For example, if you're using Vuex:
     // return this.$store.state.user;
-    
+
     // If you're storing user info in localStorage:
     // return JSON.parse(localStorage.getItem('user'));
 
@@ -472,6 +571,22 @@ ul li{
 .movie-info-btn{
   position: absolute;
   bottom: 20px;
+}
+
+.movie-rating {
+  position: absolute;
+  bottom: 100px;
+}
+.custom-rate .el-rate__item {
+  font-size: 100px; /* 调整星星大小 ？？？*/
+}
+/* .movie-rating-title {
+  margin-right: 10px;
+} */
+
+.vote-btn {
+  font-size: 16px;
+  text-align: center;
 }
 
 .buy-btn{

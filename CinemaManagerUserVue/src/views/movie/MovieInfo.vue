@@ -116,18 +116,18 @@
                         暂无图片资源
                       </div>
                       <el-image
-                          class="default-img"
-                          :src="movieInfo.moviePictures[0]"
-                          :preview-src-list="movieInfo.moviePictures"
-                          v-if="movieInfo.moviePictures.length > 0">
+                        class="default-img"
+                        :src="movieInfo.moviePictures[0]"
+                        :preview-src-list="movieInfo.moviePictures"
+                        v-if="movieInfo.moviePictures.length > 0">
                       </el-image>
                       <div class="little-pictures">
                         <el-image
-                            class="default-img"
-                            v-for="(item,index) in movieInfo.moviePictures.slice(1)"
-                            :key="index"
-                            :src="item"
-                            :preview-src-list="movieInfo.moviePictures">
+                          class="default-img"
+                          v-for="(item,index) in movieInfo.moviePictures.slice(1)"
+                          :key="index"
+                          :src="item"
+                          :preview-src-list="movieInfo.moviePictures">
                         </el-image>
                       </div>
                     </div>
@@ -143,59 +143,60 @@
                       暂无图片资源
                     </div>
                     <el-image
-                        fit="cover"
-                        class="default-img"
-                        v-for="(item,index) in movieInfo.moviePictures"
-                        :key="index"
-                        :src="item"
-                        :preview-src-list="movieInfo.moviePictures">
+                      fit="cover"
+                      class="default-img"
+                      v-for="(item,index) in movieInfo.moviePictures"
+                      :key="index"
+                      :src="item"
+                      :preview-src-list="movieInfo.moviePictures">
                     </el-image>
                   </div>
                 </div>
               </div>
             </el-tab-pane>
             <!-- 添加评论标签页 -->
-              <el-tab-pane label="评论" name="comments">
-                <div class="tab-body">
-                  <!-- 评论输入框 -->
-                  <div class="comment-box">
-                    <el-input
-                      v-model="newComment"
-                      type="textarea"
-                      :rows="3"
-                      placeholder="写下你的评论..."
-                    />
-                    <el-button
-                      type="primary"
-                      @click="addComment"
-                      style="margin-top: 10px;"
-                    >
-                      发表评论
-                    </el-button>
-                  </div>
-
-                  <!-- 评论列表 -->
-                  <div class="comment-list">
-                    <el-card v-for="comment in comments" :key="comment.id" class="comment-item">
-                      <div class="comment-info">
-                        <span class="comment-user">{{ comment.username }}</span>
-                        <span class="comment-time">{{ comment.time }}</span>
-                        <!-- 删除按钮 -->
-                          <el-button
-                            type="text"
-                            size="small"
-                            icon="el-icon-delete"
-                            @click="deleteComment(comment.id)"
-                            style="color: red;"
-                          >
-                            删除
-                          </el-button>
-                      </div>
-                      <div class="comment-content">{{ comment.content }}</div>
-                    </el-card>
-                  </div>
+            <el-tab-pane label="评论" name="comments">
+              <div class="tab-body">
+                <!-- 评论输入框 -->
+                <div class="comment-box">
+                  <el-input
+                    v-model="newComment"
+                    type="textarea"
+                    :rows="3"
+                    placeholder="写下你的评论..."
+                  />
+                  <el-button
+                    type="primary"
+                    @click="addComment"
+                    style="margin-top: 10px;"
+                  >
+                    发表评论
+                  </el-button>
                 </div>
-              </el-tab-pane>
+
+                <!-- 评论列表 -->
+                <div class="comment-list">
+                  <el-card v-for="comment in comments" :key="comment.id" class="comment-item">
+                    <div class="comment-info">
+                      <span class="comment-user">{{ comment.userName }}</span>
+                      <span class="comment-time">{{ comment.time }}</span>
+                      <!-- 删除按钮 -->
+                      <el-button
+                        v-if="comment.userId === currentUserId"
+                        type="text"
+                        size="small"
+                        icon="el-icon-delete"
+                        @click="deleteComment(comment.id)"
+                        style="color: red;"
+                      >
+                        删除
+                      </el-button>
+                    </div>
+                    <div class="comment-content">{{ comment.content }}</div>
+                  </el-card>
+                </div>
+              </div>
+            </el-tab-pane>
 
           </el-tabs>
         </div>
@@ -216,6 +217,7 @@ export default {
   },
   data() {
     return {
+      currentUserId: JSON.parse(window.sessionStorage.getItem('loginUser')).userId,
       movieInfo: {
         moviePictures: [],
         movieRating: 4.5 // 示例评分
@@ -239,13 +241,13 @@ export default {
       comments: [
         {
           id: 1,
-          username: '用户1',
+          userName: '用户1',
           content: '这部电影很好看！',
           time: '2024-01-15 12:00'
         },
         {
           id: 2,
-          username: '用户2',
+          userName: '用户2',
           content: '演员演技很棒。',
           time: '2024-01-15 13:30'
         }
@@ -325,7 +327,8 @@ export default {
         if (Array.isArray(resData)) {
           commentsArray = resData.map((comment) => ({
             id: comment.commentId,
-            username: comment.author,
+            userId: comment.userId,
+            userName: comment.author,
             content: comment.commentContent,
             time: new Date(comment.createdAt).toLocaleString('zh-CN', {
               year: 'numeric',
@@ -346,36 +349,36 @@ export default {
         this.$message.error('获取评论失败，请重试');
       }
     },
-      // 删除评论方法
-      async deleteComment(commentId) {
-        try {
-          // 弹窗确认是否删除
-          const confirm = await this.$confirm(
-            '确定要删除这条评论吗？',
-            '提示',
-            {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              type: 'warning',
-            }
-          );
-
-          if (confirm) {
-            // 调用后端删除评论接口
-            const { data: res } = await axios.delete(`http://127.0.0.1:9231/sysComment/${commentId}`);
-            if (res.code !== 200) {
-              return this.$message.error('删除评论失败');
-            }
-
-            this.$message.success('评论已删除');
-            // 重新获取评论列表
-            await this.getComments();
+    // 删除评论方法
+    async deleteComment(commentId) {
+      try {
+        // 弹窗确认是否删除
+        const confirm = await this.$confirm(
+          '确定要删除这条评论吗？',
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
           }
-        } catch (error) {
-          console.error('删除评论时出错:', error);
-          this.$message.error('删除评论失败，请重试');
+        );
+
+        if (confirm) {
+          // 调用后端删除评论接口
+          const { data: res } = await axios.delete(`http://127.0.0.1:9231/sysComment/${commentId}`);
+          if (res.code !== 200) {
+            return this.$message.error('删除评论失败');
+          }
+
+          this.$message.success('评论已删除');
+          // 重新获取评论列表
+          await this.getComments();
         }
-      },
+      } catch (error) {
+        console.error('删除评论时出错:', error);
+        this.$message.error('删除评论失败，请重试');
+      }
+    },
 
 
 
@@ -386,84 +389,86 @@ export default {
     },
     // 添加评论方
     async addComment() {
-    if (!this.newComment.trim()) {
-      this.$message.warning('请输入评论内容');
-      return;
-    }
-
-    // Get current user info
-    const currentUser = this.getCurrentUser(); // Implement this method based on your authentication system
-    if (!currentUser) {
-      this.$message.error('用户未登录');
-      return;
-    }
-    console.log('Current user:', currentUser);
-    console.log('Current username:', currentUser.username);
-
-    // Prepare the data object for the backend
-    const commentData = {
-      commentContent: this.newComment,
-      author: currentUser.username,
-      contentId: this.movieId,
-      userId: currentUser.userId,
-      status: '1',
-      // You can omit createdAt and updatedAt if the backend sets them automatically
-      // createdAt: new Date().toISOString(),
-      // updatedAt: new Date().toISOString(),
-    };
-    console.log('Comment Data:', commentData);
-
-    try {
-      const response = await axios.post('http://localhost:9231/sysComment/', commentData);
-      console.log('Add comment response:', response.data);
-
-      if (response.data.code !== 200) {
-        this.$message.error('评论失败');
+      if (!this.newComment.trim()) {
+        this.$message.warning('请输入评论内容');
         return;
       }
 
-      this.$message.success('评论成功');
+      // Get current user info
+      const currentUser = this.getCurrentUser(); // Implement this method based on your authentication system
+      if (!currentUser) {
+        this.$message.error('用户未登录');
+        return;
+      }
+      console.log('Current user:', currentUser);
+      console.log('Current userName:', currentUser.userName);
 
-      // Option 1: Refresh comments from the backend
-      await this.getComments();
+      // Prepare the data object for the backend
+      const commentData = {
+        commentContent: this.newComment,
+        author: currentUser.userName,
+        contentId: this.movieId,
+        userId: currentUser.userId,
+        status: '1',
+        // You can omit createdAt and updatedAt if the backend sets them automatically
+        // createdAt: new Date().toISOString(),
+        // updatedAt: new Date().toISOString(),
+      };
+      console.log('Comment Data:', commentData);
 
-      // Option 2: Add the new comment to this.comments manually
-      // this.comments.unshift({
-      //   id: response.data.data.commentId, // Use the ID returned by the backend
-      //   username: commentData.author,
-      //   content: commentData.commentContent,
-      //   time: new Date().toLocaleString('zh-CN', {
-      //     year: 'numeric',
-      //     month: '2-digit',
-      //     day: '2-digit',
-      //     hour: '2-digit',
-      //     minute: '2-digit',
-      //   }),
-      // });
+      try {
+        const response = await axios.post('http://localhost:9231/sysComment/', commentData);
+        console.log('Add comment response:', response.data);
 
-      // Clear the input field
-      this.newComment = '';
-    } catch (error) {
-      console.error('Error adding comment:', error);
-      this.$message.error('评论失败，请重试');
-    }
-  },
+        if (response.data.code !== 200) {
+          this.$message.error('评论失败');
+          return;
+        }
 
-  // Implement this method to retrieve the current user information
-  getCurrentUser() {
-    // This method should return an object with userId and username
-    // For example, if you're using Vuex:
-    // return this.$store.state.user;
+        this.$message.success('评论成功');
 
-    // If you're storing user info in localStorage:
-    // return JSON.parse(localStorage.getItem('user'));
+        // Option 1: Refresh comments from the backend
+        await this.getComments();
 
-    // Placeholder implementation:
-    return {
-      userId: 2, // Replace with actual user ID
-      username: '当前用户', // Replace with actual username
-    };
-  },
+        // Option 2: Add the new comment to this.comments manually
+        // this.comments.unshift({
+        //   id: response.data.data.commentId, // Use the ID returned by the backend
+        //   userName: commentData.author,
+        //   content: commentData.commentContent,
+        //   time: new Date().toLocaleString('zh-CN', {
+        //     year: 'numeric',
+        //     month: '2-digit',
+        //     day: '2-digit',
+        //     hour: '2-digit',
+        //     minute: '2-digit',
+        //   }),
+        // });
+
+        // Clear the input field
+        this.newComment = '';
+      } catch (error) {
+        console.error('Error adding comment:', error);
+        this.$message.error('评论失败，请重试');
+      }
+    },
+
+    // Implement this method to retrieve the current user information
+    getCurrentUser() {
+      // This method should return an object with userId and userName
+      // For example, if you're using Vuex:
+      // return this.$store.state.user;
+
+      // If you're storing user info in localStorage:
+      // return JSON.parse(localStorage.getItem('user'));
+
+      const res = JSON.parse(window.sessionStorage.getItem('loginUser'));
+
+      // Placeholder implementation:
+      return {
+        userId: res.userId, // Replace with actual user ID
+        userName: res.userName, // Replace with actual userName
+      };
+    },
   }
 };
 </script>
@@ -788,5 +793,14 @@ ul li{
 .user-name{
   margin-top: 2px;
 }
+
+.comment-user {
+  margin-right: 5px; /* 控制右侧间距为5px */
+}
+
+.comment-time {
+  margin-right: 5px; /* 控制右侧间距为5px */
+}
+
 
 </style>

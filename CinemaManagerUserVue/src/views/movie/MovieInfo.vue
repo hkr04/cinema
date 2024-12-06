@@ -17,19 +17,27 @@
             </ul>
           </div>
           <!-- 电影评分 -->
-          <div class="movie-rating">
-            <!-- <span class="movie-rating-title">评分：</span> -->
-            <el-rate v-model="movieInfo.movieRating" :max="5" allow-half
+          <div class="movie-rating" style="display: flex; align-items: center; gap: 10px; z-index: 999;">
+            <el-rate v-model="movieRating" :max="5" allow-half
                      void-color="white"
                      disabled-void-color="#d3d3d3"
                      class="custom-rate">
             </el-rate>
+            <!-- 显示 10 分制评分 -->
+            <span>{{ this.movieRating * 2 }} 分</span>
+            <!-- 提交按钮 -->
+            <el-button
+              type="danger"
+              @click="submitRating"
+            >
+              {{ this.movieRating === this.movieInfo.previousRating ? '已提交' : '提交' }}
+            </el-button>
           </div>
           <div class="movie-info-btn">
             <el-button class="buy-btn" type="primary" @click="toChooseSession" style="font-size: 22px;">
               <i class="iconfont icon-r-yes" style="font-size: 26px;"></i> 特惠购票</el-button>
 
-            <el-button class="vote-btn" type="success" @click="openDatePicker" style="font-size: 22px; margin-left: 10px;">
+            <el-button class="vote-btn" type="success" @click="openDatePicker" style="  font-size: 22px; margin-left: 10px;">
               <i class="el-icon-date" style="font-size: 26px;"></i> 票选放映时段
             </el-button>
 
@@ -63,7 +71,7 @@
                 </el-form>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="dialogVisible = false">取消</el-button>
-                    <el-button type="primary" @click="VoteSuccess">提交</el-button>
+                    <el-button type="primary" @click="voteSuccess">提交</el-button>
                   </span>
               </div>
               <div v-else>
@@ -72,6 +80,9 @@
             </el-dialog>
           </div>
           <div class="movie-info-score">
+            <!-- 评分分布图 -->
+            <div class="rating-distribution" ref="ratingChart">
+            </div>
             <div class="movie-index box-office-container">
               <span class="movie-index-title">累计票房</span>
               <div style="display: flex;align-items: flex-end;">
@@ -221,10 +232,8 @@ export default {
     return {
       currentUserId: loginUser ? JSON.parse(loginUser).userId : "",
       currentUserName: loginUser ? JSON.parse(loginUser).userName: "",
-      movieInfo: {
-        moviePictures: [],
-        movieRating: 4.5 // 示例评分
-      },
+      movieInfo: {},
+      movieRating: 4.5,
       movieId: this.$route.params.movieId,
       activeName: 'introduction',
       colors: ['#99A9BF', '#F7BA2A', '#FF9900'],
@@ -261,13 +270,121 @@ export default {
     this.getMovieInfo()
     this.getComments()
   },
+  mounted() {
+    this.initRatingDistributionChart();
+  },
   methods: {
+    // 自定义 sleep 函数，返回一个 Promise 用于暂停异步操作
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
+    async initRatingDistributionChart() {
+      // 使用 while 循环，但不阻塞线程
+      while (!this.movieInfo.ratingDistribution) {
+        await this.sleep(1000);  // 每秒检查一次
+      }
+
+      console.log(this.movieInfo.ratingDistribution)
+
+      if (this.movieInfo.ratingDistribution) {
+        const chartDom = this.$refs.ratingChart;
+        const myChart = echarts.init(chartDom);
+
+        const option = {
+          // 隐藏坐标轴
+          xAxis: {
+            type: 'value',  // 横向柱状图
+            show: false,    // 隐藏 x 轴
+            axisLine: {
+              show: false,    // 隐藏 y 轴的坐标轴线
+            },
+          },
+          yAxis: {
+            type: 'category', // 评分区间
+            data: ['1星', '2星', '3星', '4星', '5星'], // 评分区间
+            axisLine: {
+              show: false,    // 隐藏 y 轴的坐标轴线
+            },
+            axisLabel: {
+              rotate: 45,
+              show: true,     // 显示 y 轴的标签（评分区间）
+              color: '#000',  // 标签颜色
+              fontSize: 12,   // 标签字体大小
+            },
+            axisTick:{
+              show:false // 不显示坐标轴刻度线
+            },
+          },
+          series: [
+            {
+              data: this.movieInfo.ratingDistribution,
+              type: 'bar',
+              barWidth: '60%',
+              itemStyle: {
+                color: '#42b983', // 设置柱状图颜色
+              },
+              label: {
+                show: true,  // 显示标签
+                position: 'right',  // 标签在条形的右侧
+                formatter: '{c}%',  // 显示百分比，`{c}` 是数据值
+                color: '#000',  // 标签颜色
+                fontSize: 14,   // 字体大小
+                margin: 20,
+              }
+            },
+          ],
+        };
+
+        myChart.setOption(option);
+      } else {
+        console.error('评分分布数据无效');
+      }
+    },
+    async submitRating() {
+      // Get current user info
+      const currentUser = this.getCurrentUser(); // Implement this method based on your authentication system
+      if (!currentUser) {
+        this.$message.error('用户未登录');
+        return;
+      }
+      console.log('Current user:', currentUser);
+      console.log('Current userName:', currentUser.userName);
+
+      if (this.movieRating <= 0) {
+        this.$message.warning('评分不能为零哦');
+        return;
+      }
+
+      const ratingData = {
+        movieId: this.movieInfo.movieId,
+        userId: currentUser.userId,
+        rating: this.movieRating * 2
+      };
+
+      try {
+        let response;
+        if (this.movieInfo.previousRating > 0) {
+          response = await axios.put('sysRating/', ratingData);
+        } else {
+          response = await axios.post('sysRating/', ratingData);
+          this.movieInfo.previousRating = this.movieRating
+        }
+
+        if (response.data.code !== 200) {
+          this.$message.error('评分失败');
+          return;
+        }
+        this.$message.success('评分成功');
+      } catch (error) {
+        this.$message.error('评分失败')
+      }
+    },
     //票选
     openDatePicker() {
       this.dialogVisible = true;
       this.voteSubmitted = false;
     },
-    VoteSuccess() {
+    voteSuccess() {
       // 显示“已投票”文本
       this.voteSubmitted = true;
       this.dialogTitle = "投票成功";
@@ -296,18 +413,61 @@ export default {
         this.$message.error('请选择一个时间段');
       }
     },
-    async getMovieInfo(){
-      const _this = this
-      const {data : res} = await axios.get('sysMovie/find/' + this.movieId)
-      if(res.code !== 200) return this.$message.error('数据查询失败')
-      this.movieInfo = res.data
-      this.movieInfo.moviePoster = this.httpURL + JSON.parse(res.data.moviePoster)[0]
+    async fetchData() {
+      // 确保在获取电影信息后再初始化评分分布图
+      await this.getMovieInfo();
+      this.getComments();  // 获取评论的操作可以并行执行，等待 movieInfo 加载完后继续执行
+
+      // 获取电影信息后，再初始化评分分布图
+      this.initRatingDistributionChart();
+    },
+    async getMovieInfo() {
+      const _this = this;
+      const { data: res } = await axios.get('sysMovie/find/' + this.movieId);
+      const { data: ratingRes } = await axios.get('sysRating/findByMovieId/' + this.movieId);
+
+      if (res.code !== 200) return this.$message.error('数据查询失败');
+      if (ratingRes.code !== 200) return this.$message.error('评分数据查询失败');
+
+      // 设置电影基本信息
+      this.movieInfo = res.data;
+      this.movieInfo.moviePoster = this.httpURL + JSON.parse(res.data.moviePoster)[0];
       this.movieInfo.moviePictures = JSON.parse(this.movieInfo.moviePictures).map((obj, index) => {
-        return this.httpURL + obj
-      })
-      this.movieInfo.movieCategoryList = this.movieInfo.movieCategoryList.map((obj,index) => {
+        return this.httpURL + obj;
+      });
+      this.movieInfo.movieCategoryList = this.movieInfo.movieCategoryList.map((obj, index) => {
         return obj.movieCategoryName;
-      }).join(" ")
+      }).join(" ");
+
+      // 计算评分数据
+      const ratings = ratingRes.data;  // 假设 ratingRes.data 包含所有用户评分数据
+      let totalRating = 0;
+      let ratingCount = ratings.length;
+      let ratingDistribution = [0, 0, 0, 0, 0]; // [1星, 2星, 3星, 4星, 5星]
+      let userRating = -1;  // 默认没有评分
+
+      // 统计分布和计算平均分
+      ratings.forEach(rating => {
+        let ratingValue = Math.ceil(rating.rating / 2);  // 假设评分是以半颗星计算的，转换为 1-5 分
+
+        if (ratingValue >= 1 && ratingValue <= 5) {
+          ratingDistribution[ratingValue - 1] += 1;  // 更新相应的评分分布
+        }
+
+        if (rating.userId === this.currentUserId) {  // 如果当前用户的 ID 存在于 rating 中
+          userRating = ratingValue;
+        }
+      });
+
+      // 计算平均评分
+      this.movieInfo.averageRating = totalRating / (ratingCount * 2);  // 除以 2 转换为 1-5 评分
+      this.movieInfo.ratingDistribution = ratingDistribution.map(count => count / ratingCount); // 转换为比例
+      this.movieInfo.previousRating = userRating;
+
+      console.log(this.movieInfo.ratingDistribution);
+
+      // 设置当前评分（若没有评分则为 -1）
+      this.movieRating = this.movieInfo.previousRating > 0 ? this.movieInfo.previousRating : this.movieInfo.averageRating;
     },
     showPictures(){
       this.activeName = 'pictures'
@@ -490,8 +650,7 @@ a{
   padding: 0;
   width: 100%;
   min-width: 1200px;
-  /* background: url('../../assets/movie-info-background.jpg') */
-
+  height: 500px;
   background: radial-gradient( pink, lightblue);
 }
 
@@ -579,18 +738,17 @@ ul li{
 .movie-info-btn{
   position: absolute;
   bottom: 20px;
+  z-index: 999;
 }
 
 .movie-rating {
   position: absolute;
-  bottom: 100px;
+  bottom: 80px;
 }
+
 .custom-rate .el-rate__item {
   font-size: 100px; /* 调整星星大小 ？？？*/
 }
-/* .movie-rating-title {
-  margin-right: 10px;
-} */
 
 .vote-btn {
   font-size: 16px;
@@ -605,9 +763,12 @@ ul li{
 }
 
 .movie-info-score{
+  display: flex;
   position: absolute;
-  top: 145px;
-  left: 342px;
+  align-items: center;             /* 垂直居中对齐 */
+  top: 80px;
+  left: 0;
+  z-index: 1;
 }
 
 .movie-index {
@@ -651,7 +812,7 @@ ul li{
 }
 
 .movie-info-right{
-  height: 300px;
+  height: 400px;
   position: relative;
   margin-right: 30px;
   margin-left: 300px;
@@ -803,6 +964,14 @@ ul li{
 
 .comment-time {
   margin-right: 5px; /* 控制右侧间距为5px */
+}
+
+.rating-distribution {
+  width: 230px;
+  height: 250px;
+  margin-left: 5px;           /* 左边距 */
+  margin-bottom: 50px;        /* 下边距 */
+  margin-right: 30px;
 }
 
 

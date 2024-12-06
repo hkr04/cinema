@@ -438,3 +438,14 @@ CREATE TABLE `sys_comment` (
 -- ----------------------------
 INSERT INTO `sys_comment` (comment_id, content_id, user_id, content, status, created_at, updated_at) VALUES (101, 2, 1, '这是一条评论内容', 1, '2023-07-08 12:30:00', '2023-07-08 12:30:00');
 INSERT INTO `sys_comment` (comment_id, content_id, user_id, content, status, created_at, updated_at) VALUES (102, 3, 1, '这是另一条评论内容', 1, '2023-07-08 13:30:00', '2023-07-08 13:30:00');
+
+-- ----------------------------
+-- Table structure for sys_comment
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_rating`;
+CREATE TABLE `sys_rating` (
+    rating_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    movie_id BIGINT NOT NULL COMMENT '评分电影 id',
+    rating INT NOT NULL COMMENT '评分为0～10',
+    user_id BIGINT NOT NULL COMMENT  '评分用户 id'
+);

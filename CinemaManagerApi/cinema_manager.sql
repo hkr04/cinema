@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 80300
 File Encoding         : 65001
 
-Date: 2024-12-06 23:06:28
+Date: 2024-12-07 01:34:14
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -443,3 +443,22 @@ INSERT INTO `sys_user` VALUES ('31', 'user2', '57cfd93addb99b585ce40820485d264a'
 INSERT INTO `sys_user` VALUES ('32', 'user3', '68bbb917763fe3a242ff3e822807e0db', ')e&K1Lw8', null, '13333333333', '0', null, '3', null, null, '0');
 INSERT INTO `sys_user` VALUES ('33', 'user4', '48e498ca469c22012d9316a8b0495197', 'Y9zDoB3!', null, '13333333333', '1', null, '3', null, null, '0');
 INSERT INTO `sys_user` VALUES ('34', 'user5', 'ad6b91ad156aade7de8194660a771da7', 'w3p!#9b@', null, '13333333333', '0', null, '3', null, null, '0');
+
+-- ----------------------------
+-- Table structure for sys_vote
+-- ----------------------------
+DROP TABLE IF EXISTS `sys_vote`;
+CREATE TABLE `sys_vote` (
+  `vote_id` bigint NOT NULL AUTO_INCREMENT,
+  `movie_id` bigint NOT NULL COMMENT '投票电影 id',
+  `user_id` bigint NOT NULL COMMENT '投票用户 id',
+  `start_time` char(10) NOT NULL COMMENT '期望时间段开始节点',
+  `end_time` char(10) NOT NULL COMMENT '期望时间段结束节点',
+  `vote_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '投票时间，默认为当前时间',
+  PRIMARY KEY (`vote_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- ----------------------------
+-- Records of sys_vote
+-- ----------------------------
+INSERT INTO `sys_vote` VALUES ('1', '12', '2', '18:00', '20:00', '2024-12-07 01:31:58');

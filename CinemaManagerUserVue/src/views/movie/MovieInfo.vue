@@ -45,28 +45,33 @@
               <div v-if="!voteSubmitted">
                 <el-form :model="formdata" style="margin-top: 10px;">
                   <el-form-item class="edit-form-wrap">
-                    <el-time-picker
-                      v-model="formdata.starttime"
+                    <el-time-select
+                      v-model="formdata.startTime"
                       placeholder="起始时间"
-                      :value-format="pickerFormatText"
-                      :format="pickerFormatText"
+                      format='HH:mm'
+                      value-format="HH:mm"
                       :picker-options="{
-                          selectableRange: '08:00:00 - 23:59:00',
-                          format: pickerFormatText
+                          format: pickerFormatText,
+                          start: '08:30',
+                          end: '24:00',
+                          step: '00:15',
+                          maxTime: formdata.endTime? formdata.endTime : '23:59'
                         }"
-                      @change="changeTime"
-                    ></el-time-picker>
+                    ></el-time-select>
                     <span>-</span>
-                    <el-time-picker
-                      v-model="formdata.endtime"
+                    <el-time-select
+                      v-model="formdata.endTime"
                       placeholder="结束时间"
-                      :value-format="pickerFormatText"
-                      :format="pickerFormatText"
+                      format='HH:mm'
+                      value-format="HH:mm"
                       :picker-options="{
-                          selectableRange: `${minPickerTime} - 23:59:00`,
-                          format: pickerFormatText
+                          format: pickerFormatText,
+                          start: '08:30',
+                          end: '24:00',
+                          step: '00:15',
+                          minTime: formdata.startTime? formdata.startTime : '08:30'
                         }"
-                    ></el-time-picker>
+                    ></el-time-select>
                   </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
@@ -75,7 +80,7 @@
                   </span>
               </div>
               <div v-else>
-                <p>5秒后返回首页...</p>
+                <p>2秒后返回...</p>
               </div>
             </el-dialog>
           </div>
@@ -242,8 +247,8 @@ export default {
       dialogTitle: "您希望电影在哪个时间段内开场？",
 
       formdata: {
-        starttime: '',
-        endtime: ''
+        startTime: '',
+        endTime: ''
       },
       minPickerTime: '08:00:00',
       pickerFormatText: 'HH:mm',
@@ -284,7 +289,7 @@ export default {
         await this.sleep(1000);  // 每秒检查一次
       }
 
-      console.log(this.movieInfo.ratingDistribution)
+      // console.log(this.movieInfo.ratingDistribution)
 
       if (this.movieInfo.ratingDistribution) {
         const chartDom = this.$refs.ratingChart;
@@ -351,8 +356,8 @@ export default {
         this.$message.error('用户未登录');
         return;
       }
-      console.log('Current user:', currentUser);
-      console.log('Current userName:', currentUser.userName);
+      // console.log('Current user:', currentUser);
+      // console.log('Current userName:', currentUser.userName);
 
       if (this.movieRating <= 0) {
         this.$message.warning('评分不能为零哦');
@@ -388,42 +393,77 @@ export default {
       this.dialogVisible = true;
       this.voteSubmitted = false;
     },
-    voteSuccess() {
-      // 显示“已投票”文本
-      this.voteSubmitted = true;
-      this.dialogTitle = "投票成功";
-
-      // 在2秒后自动关闭对话框
-      setTimeout(() => {
-        this.dialogVisible = false;
-      }, 5000);
+    async voteSuccess() {
+      try {
+        this.voteSubmitted = false;
+        await this.submitVote();
+        this.dialogTitle = this.voteSubmitted? "投票成功" : "操作频繁";
+        // 在2秒后自动关闭对话框
+        setTimeout(() => {
+          this.dialogVisible = false;
+        }, 2000);
+      } catch (error) {
+        return;
+      }
     },
 
     async submitVote() {
-      if (this.selectedDateRange.length === 2) {
+      // Get current user info
+      const currentUser = this.getCurrentUser(); // Implement this method based on your authentication system
+      if (!currentUser) {
+        this.$message.error('用户未登录');
+        return;
+      }
+
+      if (this.formdata.startTime && this.formdata.endTime) {
         const voteData = {
-          user_id: this.user_id,            // 用户 ID
-          movie_id: this.movieId,           // 电影 ID
-          vote_time_start: this.selectedDateRange[0], // 用户选择的开始时间
-          vote_time_end: this.selectedDateRange[1],   // 用户选择的结束时间
+          userId: currentUser.userId,            // 用户 ID
+          movieId: this.movieId,                 // 电影 ID
+          startTime: this.formdata.startTime,    // 用户选择的开始时间
+          endTime: this.formdata.endTime,        // 用户选择的结束时间
+        };
+
+        const params = {
+          userId: currentUser.userId,
+          movieId: this.movieId
         };
 
         try {
-          // 提交投票数据的代码...
+          // 获取今天的日期
+          const today = new Date();
+          today.setHours(0, 0, 0, 0); // 设置为今天的开始时间（00:00:00）
+          let response;
+          response = await axios.get('sysVote/findByUserMovieId', { params });
+          // console.log(response);
+          if (response.data.data) {
+            // 将响应中的投票时间转换为 Date 对象
+            const voteDate = new Date(response.data.data.voteTime.toString().replace(" ", "T"));
+            voteDate.setHours(0, 0, 0, 0); // 只比较日期部分
+
+            // console.log(today);
+            // console.log(voteDate);
+            // console.log(voteDate >= today);
+
+            // 如果投票时间大于等于今天，则表示今天已投票过
+            if (voteDate >= today) {
+              this.$message.warning('一天只能投票一次哦');
+              return;
+            }
+          }
+          // console.log(voteData);
+          response = await axios.post('sysVote/', voteData);
+          if (response.data.code !== 200) {
+            this.$message.error('投票失败');
+            return;
+          }
+          this.$message.success('投票成功');
+          this.voteSubmitted = true;
         } catch (error) {
-          this.$message.error('网络错误，无法提交投票');
+          this.$message.error('投票失败');
         }
       } else {
         this.$message.error('请选择一个时间段');
       }
-    },
-    async fetchData() {
-      // 确保在获取电影信息后再初始化评分分布图
-      await this.getMovieInfo();
-      this.getComments();  // 获取评论的操作可以并行执行，等待 movieInfo 加载完后继续执行
-
-      // 获取电影信息后，再初始化评分分布图
-      this.initRatingDistributionChart();
     },
     async getMovieInfo() {
       const _this = this;

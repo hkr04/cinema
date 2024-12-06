@@ -291,7 +291,10 @@ export default {
         const myChart = echarts.init(chartDom);
 
         const option = {
-          // 隐藏坐标轴
+          grid: {
+            left: '15%',
+            right: '20%'
+          },
           xAxis: {
             type: 'value',  // 横向柱状图
             show: false,    // 隐藏 x 轴
@@ -306,10 +309,11 @@ export default {
               show: false,    // 隐藏 y 轴的坐标轴线
             },
             axisLabel: {
-              rotate: 45,
+              rotate: 0,
               show: true,     // 显示 y 轴的标签（评分区间）
               color: '#000',  // 标签颜色
-              fontSize: 12,   // 标签字体大小
+              fontSize: 14,   // 标签字体大小
+              // margin: 10
             },
             axisTick:{
               show:false // 不显示坐标轴刻度线
@@ -448,11 +452,10 @@ export default {
 
       // 统计分布和计算平均分
       ratings.forEach(rating => {
-        let ratingValue = Math.ceil(rating.rating / 2);  // 假设评分是以半颗星计算的，转换为 1-5 分
+        let ratingValue = rating.rating / 2;  // 假设评分是以半颗星计算的，转换为 1-5 分
 
-        if (ratingValue >= 1 && ratingValue <= 5) {
-          ratingDistribution[ratingValue - 1] += 1;  // 更新相应的评分分布
-        }
+        ratingDistribution[Math.ceil(ratingValue) - 1] += 100;  // 更新相应的评分分布
+        totalRating += rating.rating;
 
         if (rating.userId === this.currentUserId) {  // 如果当前用户的 ID 存在于 rating 中
           userRating = ratingValue;
@@ -460,14 +463,12 @@ export default {
       });
 
       // 计算平均评分
-      this.movieInfo.averageRating = totalRating / (ratingCount * 2);  // 除以 2 转换为 1-5 评分
-      this.movieInfo.ratingDistribution = ratingDistribution.map(count => count / ratingCount); // 转换为比例
+      this.movieInfo.averageRating = totalRating / ratingCount;
+      this.movieInfo.ratingDistribution = ratingDistribution.map(count => Math.round(count / ratingCount)); // 转换为比例
       this.movieInfo.previousRating = userRating;
 
-      console.log(this.movieInfo.ratingDistribution);
-
       // 设置当前评分（若没有评分则为 -1）
-      this.movieRating = this.movieInfo.previousRating > 0 ? this.movieInfo.previousRating : this.movieInfo.averageRating;
+      this.movieRating = this.movieInfo.previousRating > 0 ? this.movieInfo.previousRating : this.movieInfo.averageRating / 2.0;
     },
     showPictures(){
       this.activeName = 'pictures'
@@ -971,7 +972,7 @@ ul li{
   height: 250px;
   margin-left: 5px;           /* 左边距 */
   margin-bottom: 50px;        /* 下边距 */
-  margin-right: 30px;
+  margin-right: 40px;
 }
 
 

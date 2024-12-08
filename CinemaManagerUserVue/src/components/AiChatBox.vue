@@ -45,16 +45,12 @@ export default {
 
       try {
         const response = await axios.post(
-            // 'https://api.deepseek.com/chat/completions',
             'http://localhost:8080/v1/chat/completions',
-
             {
               messages: this.messages,
-              model: "deepseek-chat",
             },
             {
               headers: {
-                'Authorization': `Bearer sk-31cb341fe1ac49a196e2aa4984b8745f`,
                 'Content-Type': 'application/json',
               }
             }

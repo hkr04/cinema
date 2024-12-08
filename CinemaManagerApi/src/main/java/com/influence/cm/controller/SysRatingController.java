@@ -42,7 +42,6 @@ public class SysRatingController extends BaseController {
      */
     @PostMapping("/sysRating")
     public ResponseResult addRating(@Validated @RequestBody SysRating sysRating) {
-        System.out.println("Received rating: " + sysRating.toString());
         return getResult(sysRatingService.addRating(sysRating));
     }
 

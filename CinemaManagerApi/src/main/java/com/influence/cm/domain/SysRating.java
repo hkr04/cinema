@@ -30,7 +30,7 @@ public class SysRating implements Serializable {
     public SysRating() {
     }
 
-    public SysRating(Long ratingId, Long movieID, Long userId, int rating) {
+    public SysRating(Long ratingId, Long movieId, Long userId, int rating) {
         this.ratingId = ratingId;
         this.movieId = movieId;
         this.userId = userId;

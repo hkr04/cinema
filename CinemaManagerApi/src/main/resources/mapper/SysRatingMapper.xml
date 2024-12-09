@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.influence.cm.mapper.SysRatingMapper">
+
+    <!-- Result map for SysRating -->
+    <resultMap id="SysRatingResult" type="com.influence.cm.domain.SysRating">
+        <id property="ratingId" column="rating_id"/>
+        <result property="movieId" column="movie_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="rating" column="rating"/>
+    </resultMap>
+
+    <!-- Find ratings by movie ID -->
+    <select id="findRatingsByMovieId" parameterType="Long" resultMap="SysRatingResult">
+        SELECT * FROM sys_rating WHERE movie_id = #{id}
+    </select>
+
+    <!-- Find ratings by user ID -->
+    <select id="findRatingsByUserId" parameterType="Long" resultMap="SysRatingResult">
+        SELECT * FROM sys_rating WHERE user_id = #{id}
+    </select>
+
+    <!-- Insert a new rating -->
+    <insert id="addRating" parameterType="com.influence.cm.domain.SysRating">
+        INSERT INTO sys_rating (movie_id, user_id, rating)
+        VALUES (#{movieId}, #{userId}, #{rating})
+    </insert>
+
+    <!-- Update an existing rating -->
+    <update id="updateRating" parameterType="com.influence.cm.domain.SysRating">
+        UPDATE sys_rating
+        SET rating = #{rating}
+        WHERE user_id = #{userId} AND movie_id = #{movieId}
+    </update>
+
+</mapper>
